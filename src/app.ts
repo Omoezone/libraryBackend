@@ -7,7 +7,10 @@ dotenv.config();
 
 const app = express();
 app.use(userRouter)
+
 testDBConnection();
+
+
 /*sequelize.authenticate()
     .then(() => console.log('Connection has been established successfully.'))
     .catch((error: any) => console.error('Unable to connect to the database:', error));
