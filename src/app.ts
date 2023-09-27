@@ -2,12 +2,18 @@ import express from 'express';
 //import sequelize from './db_services/sequalizerConnection';
 import { testDBConnection } from './db_services/mysqlConnSetup';
 import userRouter from './routes/userRouter';
+import bookRouter from './routes/bookRouter';
+import authorRouter from './routes/authorRouter';
+import tagRouter from './routes/tagRouter';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use(userRouter)
-
+// API routes imported from routes folder
+app.use(userRouter);
+app.use(bookRouter);
+app.use(authorRouter);
+app.use(tagRouter);
 testDBConnection();
 
 

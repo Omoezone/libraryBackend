@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 router.use(express.json());
+
 //TODO fix any to user type
 router.get("/user/:id", async (req: Request<{ id: number}>, res) => {
     try {
