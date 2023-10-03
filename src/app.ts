@@ -1,6 +1,7 @@
 import express from 'express';
-import sequelize from './other_services/sequalizerConnection';
+import { sequalizeAuth, sequelizeSync } from './other_services/sequalizerConnection';
 import { testDBConnection } from './db_services/mysqlConnSetup';
+import { Book } from "./other_services/models/seqBooks"
 import userRouter from './routes/userRouter';
 import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
@@ -17,12 +18,17 @@ app.use(authorRouter);
 app.use(tagRouter);
 // testDBConnection(); This is for the basic mysql connector
 
+// auth and sync sequelize
+sequalizeAuth();
+sequelizeSync();
 
-sequelize.authenticate()
-    .then(() => console.info('Connection has been established successfully.'))
-    .catch((error: any) => console.error('Unable to connect to the database:', error));
+// Do this when the server is closed
+process.on('SIGINT', () => {
+    logger.end();
+    console.log('See u later, alligator!');
+    process.exit(0); 
+});
 
-logger.info("HELLO WORLD");
 const port = process.env.PORT || 3010;
 app.listen(port, () => {
     console.log(`App is listening on ${port}`);

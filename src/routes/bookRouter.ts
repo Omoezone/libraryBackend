@@ -1,6 +1,7 @@
 import express from "express";
 import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
+import { Book } from "../other_services/models/seqBooks";
 
 const router = express.Router();
 router.use(express.json());
@@ -10,6 +11,7 @@ router.use(express.json());
 router.get("/books", async (req, res) => {
     try {
         const result: any = await getAllBooks();
+        console.log("result", result)
         res.status(200).send(result);
     } catch (err) {
         console.log(err);
@@ -18,15 +20,13 @@ router.get("/books", async (req, res) => {
 });
 
 export async function getAllBooks() {
-    const connection = await conn.getConnection();
-    try{
-        const [rows] = await connection.query(`SELECT * FROM books`);
-        console.log("Books fetched successfully: ", rows);
-        connection.release();
-        return rows;
-    }catch(err){
-        console.log("no books found: ", err);
-        connection.release();
+    try {
+        const books = await Book.findAll();
+        console.log(books.every((book) => book instanceof Book));
+        const bookArray = books.map((book) => book.toJSON());
+        return bookArray;
+    } catch (error) {
+        throw error; // Re-throw the error so it can be caught in the router
     }
 }
 
