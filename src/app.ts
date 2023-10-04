@@ -25,7 +25,7 @@ sequelizeSync();
 // Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
-    console.log('See u later, alligator!');
+    console.log('See u later, silly!');
     process.exit(0); 
 });
 

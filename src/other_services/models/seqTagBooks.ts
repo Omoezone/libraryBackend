@@ -27,7 +27,8 @@ export default (sequelize: Sequelize) => {
         sequelize,
         modelName: 'TagBook',
         tableName: 'tag_books',
-        timestamps: false, // No timestamps for this table
+        timestamps: false, 
+        createdAt: false,
         }
     );
 };

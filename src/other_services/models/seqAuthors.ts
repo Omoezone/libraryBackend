@@ -29,5 +29,6 @@ export default (sequelize: Sequelize) => {
         modelName: 'Author',
         tableName: 'authors',
         timestamps: false,
+        createdAt: false,
     });
 };

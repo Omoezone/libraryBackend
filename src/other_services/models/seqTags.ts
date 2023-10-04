@@ -28,7 +28,8 @@ export default (sequelize: Sequelize) => {
             sequelize,
             modelName: 'Tag',
             tableName: 'tags',
-            timestamps: false, // No timestamps for this table
+            timestamps: false, 
+            createdAt: false,
         }
     );
 };

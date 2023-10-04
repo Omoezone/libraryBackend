@@ -33,7 +33,8 @@ export default (sequelize: Sequelize) => {
             sequelize,
             modelName: 'Review',
             tableName: 'reviews',
-            timestamps: true,
+            timestamps: false,
+            createdAt: false,
         }
     );
 };

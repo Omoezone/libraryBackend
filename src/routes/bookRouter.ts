@@ -1,13 +1,16 @@
 import express from "express";
 import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
+import logger from "../other_services/winstonLogger";
 import { Book } from "../other_services/models/seqBooks";
+import { QueryTypes } from "sequelize";
+import sequelize from "../other_services/sequalizerConnection";
 
 const router = express.Router();
 router.use(express.json());
 
 
-// Get all books
+// ---------------------- Get all books ----------------------
 router.get("/books", async (req, res) => {
     try {
         const result: any = await getAllBooks();
@@ -30,7 +33,7 @@ export async function getAllBooks() {
     }
 }
 
-// Get book with author username
+// --------------------  Get book with author username --------------------
 router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
     try {
         const result: any = await getBookById(req.params.id);
@@ -46,19 +49,21 @@ router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
 });
 
 export async function getBookById(id: number) {
-    const connection = await conn.getConnection();
     try{
-        const [rows] = await connection.query(`CALL get_book_with_author(?)`, [id]);
-        console.log("Book fetched successfully: ", rows);
-        connection.release();
-        return rows;
-    }catch(err){
-        console.log("no book found with the given ID: ", err);
-        connection.release();
+        const [results, metadata] = await sequelize.query(`CALL get_book_with_author(?)`, {
+            replacements: [id],
+            type: QueryTypes.RAW,
+            model: Book,
+        });
+        logger.info("Got book and auther, with specifik book_id: ", results);
+        return results;
+    }catch(error){
+        logger.error('Error calling stored procedure:', error);
+        throw error;
     }
 }
 
-// Create book
+// --------------------- Create book ---------------------
 router.post("/book",  async (req, res) => {
     try{
         const result = await createBook(req.body);
@@ -69,17 +74,24 @@ router.post("/book",  async (req, res) => {
     }
 });
 
-export async function createBook(values: any) {
-    const connection = await conn.getConnection();
-    try {
-        await connection.query(`INSERT INTO books (title, picture, summary, pages, amount, available_amount, author_id) VALUES (?,?,?,?,?,?,?)`, 
-        [values.title, values.picture, values.summary, values.pages, values.amount, values.available_amount, values.author_id]);
-        connection.release();
-        console.log("book added");
-        return "book added";
-    }catch(err){
-        console.log(err)
-        connection.release();
+export async function createBook(values: Book) {
+    try{
+        const book = await Book.create({
+            id: values.book_id,
+            title: values.title,
+            picture: values.picture,
+            summary: values.summary,
+            pages: values.pages,
+            amount: values.amount,
+            available_amount: values.available_amount,
+            author_id: values.author_id,
+        },
+        );
+        logger.info("created book: ", book.toJSON());
+        return book.toJSON();
+    }catch(error){
+        logger.error("error creating book: ", error)
+        throw error;
     }
 }
 export default router;
