@@ -26,7 +26,7 @@ export async function getAllBooks() {
         const bookArray = books.map((book) => book.toJSON());
         return bookArray;
     } catch (error) {
-        throw error; // Re-throw the error so it can be caught in the router
+        throw error;
     }
 }
 

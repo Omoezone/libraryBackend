@@ -13,11 +13,11 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USERNAME!, 
 }); 
 
 export const sequalizeAuth = async () => { sequelize.authenticate()
-    .then(() => logger.info('Connection has been established successfully.'))
+    .then(() => logger.silly('Connection has been established successfully.'))
     .catch((error: any) => logger.error('Unable to connect to the database:', error));
 }
 export const sequelizeSync = async () => { await sequelize.sync()
-    .then(() => logger.info('Sequelize sync successful'))
+    .then(() => logger.silly('Sequelize sync successful'))
     .catch((error:any) => logger.error('Sequelize sync failed', error));
 }
 

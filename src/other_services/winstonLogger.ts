@@ -20,6 +20,11 @@ const logger = createLogger({
             level: 'error',
             maxsize: 1024 * 1024
         }), 
+        new transports.File({
+            filename: './logs/silly.log',
+            level: 'silly',
+            maxsize: 1024 * 1024
+        }),
         new transports.Console(),
     ],
 });
