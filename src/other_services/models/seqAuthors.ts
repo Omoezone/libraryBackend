@@ -1,12 +1,10 @@
-import { DataTypes, Model, Sequelize} from "sequelize";
-
-class Author extends Model {
+import { DataTypes, Model} from "sequelize";
+import sequelize from "../sequalizerConnection";
+export class Author extends Model {
     declare author_id: number;
     declare username: string;
     declare total_books: number;
 }
-
-export default (sequelize: Sequelize) => {
     Author.init(
     {
         author_id: {
@@ -31,4 +29,5 @@ export default (sequelize: Sequelize) => {
         timestamps: false,
         createdAt: false,
     });
-};
+
+    console.log(Author == sequelize.models.Author ? "Author model made correctly" : "Cannot make author model");

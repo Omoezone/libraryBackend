@@ -1,83 +1,78 @@
 import express from 'express';
 import { Request } from 'express';
-import conn from '../db_services/mysqlConnSetup';
+import { Author } from '../other_services/models/seqAuthors';
+import logger from '../other_services/winstonLogger';
 
 const router = express.Router();
 router.use(express.json());
 
-// Get all authors
+// --------------- Get all authors ----------------
 router.get("/authors", async (req, res) => {
     try {
-        const result: any = await getAllAuthors();
+        const result: Author[] = await getAllAuthors();
         res.status(200).send(result);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Something went wrong with fetching authors");
+    } catch (error) {
+        logger.error("Error in getting all authors: [getAllAuthors, 1]",error);
+        res.status(500).send(error);
     }
 });
 
 export async function getAllAuthors() {
-    const connection = await conn.getConnection();
     try{
-        const [rows] = await connection.query(`SELECT * FROM authors`);
-        console.log("Authors fetched successfully: ", rows);
-        connection.release();
-        return rows;
-    }catch(err){
-        console.log("no authors found: ", err);
-        connection.release();
+        const result: Author[] = await Author.findAll();
+        if(!result) throw new Error("No authors found");
+        console.log(result.every((author) => author instanceof Author));
+        const authorArray = result.map((author) => author.toJSON());
+        return authorArray;
+    }catch(error){
+        logger.error("Error in getting all authors: [getAllAuthors, 2]",error);
+        throw error;
     }
 }
 
-// Get author by id
+// -------------------- Get author by id --------------------
 router.get("/author/:id", async (req: Request<{ id: number}>, res) => {
     try {
-        const result: any = await getAuthorById(req.params.id);
-        if (result.length == 0) {
-            res.status(404).send("No author found with the given id");
-        } else {
-            res.status(200).send(result);
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Something went wrong with fetching author");
+        const result: Author = await getAuthorById(req.params.id);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error with fetching author: [getAuthorById, 1] ", error);
+        res.status(500).send(error);
     }
 });
 
 export async function getAuthorById(id: number) {
-    const connection = await conn.getConnection();
     try{
-        const [rows] = await connection.query(`SELECT * FROM authors a where a.author_id = ?`, [id]);
-        console.log("Author fetched successfully: ", rows);
-        connection.release();
-        return rows;
-    }catch(err){
-        console.log("no author found with the given ID: ", err);
-        connection.release();
+        const result: Author | null = await Author.findByPk(id);
+        if(result === null) throw new Error("No author found with the given id");
+        return result;
+    }catch(error){
+        logger.error("Error with fetching author: [getAuthorById, 2] ", error);
+        throw error;
     }
 }
 // create author
 // TODO look into making total_books set automatically prop with trigegrs
 router.post("/author",  async (req, res) => {
     try{
-        const result = await createAuthor(req.body);
+        const result: Author = await createAuthor(req.body);
         res.status(200).json(result);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json("Internal server error");
+    } catch (error) {
+        logger.error("Error in creating a new author: [createAuthor, 1]", error);
+        res.status(500).json(error);
     }
 });
 
-export async function createAuthor(values: any) {
-    const connection = await conn.getConnection();
+export async function createAuthor(values: Author) {
     try {
-        await connection.query(`INSERT INTO authors (username, total_books) VALUES (?,?)`, [values.username, values.total_books]);
-        connection.release();
-        console.log("author added");
-        return "author added";
+        const author = await Author.create({
+            username: values.username,
+            total_books: values.total_books,
+        });
+        return author.toJSON();
     }catch(err){
-        console.log(err)
-        connection.release();
+        logger.error("Error in creating a new author: [createAuthor, 2]",err)
+        throw err;
     }
 }
 
