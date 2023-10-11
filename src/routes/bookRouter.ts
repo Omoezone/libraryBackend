@@ -12,7 +12,7 @@ router.use(express.json());
 // ---------------------- Get all books ----------------------
 router.get("/books", async (req, res) => {
     try {
-        const result: Book[] = await getAllBooks();
+        const result = await getAllBooks();
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error getting all books: [getAllbooks, 1]", error);
@@ -23,8 +23,11 @@ router.get("/books", async (req, res) => {
 export async function getAllBooks() {
     try {
         const books = await Book.findAll();
-        if(books.every((book) => book instanceof Book)!)
+        if(books.every((book) => book instanceof Book)!){
+            console.log(books)
             throw Error;
+        }
+        console.log("escaped")
         const bookArray = books.map((book) => book.toJSON());
         return bookArray;
     } catch (error) {

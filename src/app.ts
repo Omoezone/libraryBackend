@@ -1,13 +1,12 @@
 import express from 'express';
 import { sequalizeAuth, sequelizeSync } from './other_services/sequalizerConnection';
-import { testDBConnection } from './db_services/mysqlConnSetup';
-import { Book } from "./other_services/models/seqBooks"
 import userRouter from './routes/userRouter';
 import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
 import tagRouter from './routes/tagRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
+import job from './other_services/cronJob';
 dotenv.config();
 
 const app = express();
@@ -21,6 +20,10 @@ app.use(tagRouter);
 // auth and sync sequelize
 sequalizeAuth();
 sequelizeSync();
+
+// Cronjob migration for the database 
+// job.start();
+
 
 // Do this when the server is closed
 process.on('SIGINT', () => {
