@@ -7,9 +7,11 @@ import tagRouter from './routes/tagRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
+import cors from 'cors';
 dotenv.config();
 
 const app = express();
+app.use(cors())
 // API routes imported from routes folder
 app.use(userRouter);
 app.use(bookRouter);
