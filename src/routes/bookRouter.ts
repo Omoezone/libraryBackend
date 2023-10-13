@@ -23,11 +23,6 @@ router.get("/books", async (req, res) => {
 export async function getAllBooks() {
     try {
         const books = await Book.findAll();
-        if(books.every((book) => book instanceof Book)!){
-            console.log(books)
-            throw Error;
-        }
-        console.log("escaped")
         const bookArray = books.map((book) => book.toJSON());
         return bookArray;
     } catch (error) {
