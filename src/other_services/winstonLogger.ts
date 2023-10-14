@@ -25,6 +25,11 @@ const logger = createLogger({
             level: 'silly',
             maxsize: 1024 * 1024
         }),
+        new transports.File({
+            filename: './logs/verbose.log',
+            level: 'verbose',
+            maxsize: 1024 * 1024
+        }),
         new transports.Console(),
     ],
 });

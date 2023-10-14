@@ -8,7 +8,7 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USERNAME!, 
     port: Number(process.env.DB_PORT) || 3306,
     dialect: 'mysql',
     logging: (msg) => {
-        console.log('Received log message:', msg)
+        logger.verbose(`Received log message: ${msg}`);
     },
 }); 
 
