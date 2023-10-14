@@ -75,7 +75,7 @@ router.post("/user/:id", async (req, res) => {
 export async function updateUser(id: string, values: any) {
     const connection = await conn.getConnection();
     try {
-        await connection.query(`get `);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.nameId, values.firstName, values.lastName, id, values.email, values.password]);
         connection.release();
         return "customer updated";
     }catch(err){
