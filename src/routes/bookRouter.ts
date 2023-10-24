@@ -30,7 +30,7 @@ export async function getAllBooks() {
         throw error;
     }
 }
-
+ 
 // --------------------  Get book with author username --------------------
 router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
     try {

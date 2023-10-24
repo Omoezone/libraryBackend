@@ -27,7 +27,7 @@ export async function getAllAuthors() {
     }catch(error){
         logger.error("Error in getting all authors: [getAllAuthors, 2]",error);
         throw error;
-    }
+    } 
 }
 
 // -------------------- Get author by id --------------------
