@@ -4,4 +4,7 @@ DB_PASSWORD =
 DB_HOST = 
 DB_PORT = 
 
+MONGO_DB_NAME = 
+MONGO_DB_HOST = "mongodb://localhost:<port>"
+
 PORT = 
