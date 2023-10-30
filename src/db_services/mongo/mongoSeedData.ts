@@ -5,13 +5,10 @@ dotenv.config();
 
 const seedData = async () => {
     try{
-        await mongoDbClient.connect();
-        const db = mongoDbClient.db(process.env.MONGO_DB_NAME);
-
-        await resetDcuments(db);
-        await userSeed(db);
-        await bookSeed(db);
-        await authorSeed(db);
+        await resetDcuments(mongoDbClient);
+        await userSeed(mongoDbClient);
+        await bookSeed(mongoDbClient);
+        await authorSeed(mongoDbClient);
         console.log("Done seeding ALL data for mongo");
     }catch(err){
         logger.error(err);
