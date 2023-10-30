@@ -1,5 +1,7 @@
 import express from 'express';
 import { sequalizeAuth, sequelizeSync } from './other_services/sequalizerConnection';
+import mongoDbClient, { connectToMongoDB } from './db_services/mongo/mongoConnSetup';
+import seedData from './db_services/mongo/mongoSeedData';
 import userRouter from './routes/userRouter';
 import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
@@ -25,6 +27,10 @@ app.use(authRouter);
 sequalizeAuth();
 sequelizeSync();
 
+// test mongoDB connection
+connectToMongoDB();
+seedData();
+
 // Cronjob migration for the database 
 // job.start();
 
@@ -32,6 +38,7 @@ sequelizeSync();
 // Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
+    mongoDbClient.close();
     console.log('See u later, silly!');
     process.exit(0); 
 });
