@@ -3,6 +3,9 @@ import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
 import { UserData } from "../other_services/models/seqUsersData";
 import bcrypt from "bcrypt";
+import { QueryTypes } from "sequelize";
+import sequelize from "../other_services/sequalizerConnection";
+
 
 const router = express.Router();
 router.use(express.json());
@@ -34,22 +37,29 @@ export async function getUser(email: string, password: string) {
     }
 }
 
-router.post("/signup", async (req, res) => {
+router.post("/auth/signup", async (req, res) => {
     try {
-        const result: any = await createUser(req.body.name_id, req.body.user_id, req.body.email, req.body.password);
+        console.log("result", req.body)
+        const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
         console.log("result", result)
         res.status(200).send(result);
     } catch (err) {
         console.log(err);
-        res.status(500).send("Something went wrong with fetching books");
+        res.status(500).send("Something went wrong while creating user");
     }
 });
 
-export async function createUser(name_id: number, user_id: number, email: string, password: string) {
+export async function createUser(first_name: string, last_name:string, email: string, password: string) {
     try {
-        const user = await UserData.create({ name_id: name_id, user_id: user_id, email: email, pass: password });
-        console.log(user.toJSON());
-        return user.toJSON();
+        let hash_password = bcrypt.hashSync(password, 10);
+        const result = await sequelize.query('CALL create_user(?, ?, ?, ?)',
+        {
+          replacements: [first_name, last_name, email, hash_password],
+          type: QueryTypes.RAW,
+          model: UserData,
+        });
+        console.log(result)
+        return result;
     } catch (error) {
         throw error; // Re-throw the error so it can be caught in the router
     }

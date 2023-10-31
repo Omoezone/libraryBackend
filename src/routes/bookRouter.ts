@@ -31,6 +31,39 @@ export async function getAllBooks() {
     }
 }
 
+// --------------------- Get range of books ---------------------
+router.get("/books/:range", async (req, res) => {
+    
+    try {
+           const finishRange = Number(req.params.range);
+            const result = await getBooksUpToFinishRange(finishRange);
+            res.status(200).send(result);
+        }
+    catch (error) {
+        logger.error("Error getting books up to finish range: [getBooksUpToFinishRange]", error);
+        res.status(500).send(error);
+    }
+
+});
+
+
+export async function getBooksUpToFinishRange(finishRange: number) {
+    try {
+        const books = await Book.findAll({
+            limit: finishRange,
+        });
+
+        const bookArray = books.map((book) => book.toJSON());
+        return bookArray;
+    } catch (error) {
+        logger.error("Error getting books up to finish range: [getBooksUpToFinishRange]", error);
+        throw error;
+    }
+}
+
+
+
+
 // --------------------  Get book with author username --------------------
 router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
     try {
@@ -91,4 +124,8 @@ export async function createBook(values: Book) {
         throw error;
     }
 }
+
+
+
+
 export default router;
