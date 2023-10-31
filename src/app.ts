@@ -7,6 +7,7 @@ import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
 import tagRouter from './routes/tagRouter';
 import authRouter from './routes/authRouter';
+import mongoBookRouter from './routes/mongoRoutes/mongoBookRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
@@ -21,21 +22,21 @@ app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
-// testDBConnection(); This is for the basic mysql connector
+app.use(mongoBookRouter)
 
-// auth and sync sequelize
+// --- auth and sync sequelize
 sequalizeAuth();
 sequelizeSync();
 
-// test mongoDB connection
+// --- test mongoDB connection
 connectToMongoDB();
-seedData();
+//seedData();
 
-// Cronjob migration for the database 
+// --- Cronjob migration for the database 
 // job.start();
 
 
-// Do this when the server is closed
+// --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
     mongoDbClient.close();

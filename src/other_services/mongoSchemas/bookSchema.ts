@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
+
 // JEG ER I TVIVL OM VI SKAL BRUGE ID REFERENCER PÅ ANDET END BOOKS I USERS interactiontags
 const bookSchema = new Schema({
     title: { type: String, required: true },
@@ -22,4 +23,4 @@ const bookSchema = new Schema({
 
 const Book = mongoose.model('Book', bookSchema);
 
-module.exports = Book;
+export default Book;
