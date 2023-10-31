@@ -12,6 +12,7 @@ router.use(express.json());
 
 router.post("/login", async (req, res) => {
     try {
+        console.log(req.body.email, req.body.password)
         const result: any = await getUser(req.body.email, req.body.password);
         console.log("result", result)
         res.status(200).send(result);
@@ -21,17 +22,17 @@ router.post("/login", async (req, res) => {
     }
 });
 
-export async function getUser(email: string, password: string) {
+export async function getUser(mail: string, password: string) {
     try {
-        const user = await UserData.findOne({ where: { email: email } });
-        // if (!user) {
-        //     throw new Error("No user found with the given email");
-        // } else if (!bcrypt.compareSync(password, user.password)) {
-        //     throw new Error("Incorrect password");
-        // } else {
+        const user = await UserData.findOne({ where: { email: mail } });
+        if (!user) {
+            throw new Error("No user found with the given email");
+        } else if (!bcrypt.compareSync(password, user.password)) {
+            throw new Error("Incorrect password");
+        } else {
             console.log(user);
             return user; // Remember to remove the password from the returned user object
-        // }
+        }
     } catch (error) {
         throw error; // Re-throw the error so it can be caught in the router
     }
