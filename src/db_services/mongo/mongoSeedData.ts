@@ -28,13 +28,13 @@ const userSeed = async (db: any) => {
                 "created_at": Date(),
                 "is_deleted": false,
                 "deleted_at": null,
-                "user_data": {
+                "user_data": [{
                     "email": "testMail1@mail.dk",
                     "password": "Password1",
                     "first_name": "William",
                     "last_name": "omoe",
                     "timestamp": Date()
-                },
+                }],
                 "bookInteractions": [
                     {
                         "bookId": new mongoose.Types.ObjectId(),
@@ -51,13 +51,13 @@ const userSeed = async (db: any) => {
                 "created_at": Date(),
                 "is_deleted": false,
                 "deleted_at": null,
-                "user_data": {
+                "user_data": [{
                     "email": "testMail2@mail.dk",
                     "password": "Password2",
                     "first_name": "Rasmus",
                     "last_name": "koefoed",
                     "timestamp": Date()
-                },
+                }],
                 "bookInteractions": [
                     {
                         "bookId": new mongoose.Types.ObjectId(),
@@ -84,13 +84,13 @@ const userSeed = async (db: any) => {
                 "created_at": Date(),
                 "is_deleted": false,
                 "deleted_at": null,
-                "user_data": {
+                "user_data": [{
                     "email": "testMail3@mail.dk",
                     "password": "Password3",
                     "first_name": "jane",
                     "last_name": "doe",
                     "timestamp": Date()
-                },
+                }],
                 "bookInteractions": [
                     {
                         "bookId": new mongoose.Types.ObjectId(),
@@ -117,13 +117,13 @@ const userSeed = async (db: any) => {
                 "created_at": Date(),
                 "is_deleted": false,
                 "deleted_at": null,
-                "user_data": {
+                "user_data": [{
                     "email": "testMail4@mail.dk",
                     "password": "Password4",
                     "first_name": "John",
                     "last_name": "Doe",
                     "timestamp": Date()
-                },
+                }],
                 "bookInteractions": [
                     {
                         "bookId": new mongoose.Types.ObjectId(),
@@ -153,7 +153,7 @@ const userSeed = async (db: any) => {
 const bookSeed = async (db: any) => {
     try{
     const books = db.collection("books");
-    const bookData = [
+    const bookData = [  
         {
             "title": "Necronomicon",
             "picture": "sample.jpg1",

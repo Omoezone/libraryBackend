@@ -116,5 +116,42 @@ async function deleteUserMongo(id:string) {
     }
 }
 
+router.post("/mongo/updateUser/:id", async (req, res) => {
+    try {
+        const result = await updateUserMongo(req.params.id, req.body);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error in updating user: [Mongo updateUser, 1]",error);
+        res.status(500).send(error);
+    }
+});
+
+async function updateUserMongo(id:string, body:any) {
+    try {
+        const user: any = await User.findById(id);
+
+        if (!user) {
+            throw new Error('User not found.');
+        }
+
+        for (const field in body) {
+            if (field === 'user_data') {
+                if (!Array.isArray(user.user_data)) {
+                    user.user_data = [];
+                }
+
+                user.user_data.push(body[field]);
+            } else if (user[field] !== undefined) {
+                user[field] = body[field];
+            }
+        }
+
+        await user.save();
+        return user;
+    } catch (error) {
+        logger.error("Error in updating user: [Mongo updateUser, 2]", error);
+    }
+}
+
 export default router;
 
