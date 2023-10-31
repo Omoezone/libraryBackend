@@ -18,7 +18,7 @@ const bookSchema = new Schema({
     ],
     reviews: [
         {
-            user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+            user: { type: Schema.Types.ObjectId, ref: 'User' },
             stars: { type: Number, required: true },
         }
     ],

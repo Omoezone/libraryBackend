@@ -30,7 +30,7 @@ sequelizeSync();
 
 // --- test mongoDB connection
 connectToMongoDB();
-//seedData();
+seedData();
 
 // --- Cronjob migration for the database 
 // job.start();

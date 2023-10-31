@@ -1,6 +1,11 @@
 import logger from "../../other_services/winstonLogger";
 import mongoDbClient from "./mongoConnSetup";
 import dotenv from "dotenv";
+import User from "../../other_services/mongoSchemas/userDataSchema";
+import Book from "../../other_services/mongoSchemas/bookSchema";
+import Author from "../../other_services/mongoSchemas/authorSchema";
+import mongoose from "mongoose";
+
 dotenv.config();
 
 const seedData = async () => {
@@ -26,21 +31,19 @@ const userSeed = async (db: any) => {
                 "user_data": {
                     "email": "testMail1@mail.dk",
                     "password": "Password1",
-                    "user_name": {
-                        "first_name": "William",
-                        "last_name": "omoe"
-                    }
+                    "first_name": "William",
+                    "last_name": "omoe",
+                    "timestamp": Date()
                 },
                 "bookInteractions": [
                     {
-                        "bookId": null,
+                        "bookId": new mongoose.Types.ObjectId(),
                         "intereactionType": "Borrowed"
                     }
                 ],
                 "favoritedAuthors": [
                     {
-                        "username": "Johnny Sins",
-                        "total_books": 4
+                        "author": new mongoose.Types.ObjectId(),
                     }
                 ]
             },
@@ -51,38 +54,97 @@ const userSeed = async (db: any) => {
                 "user_data": {
                     "email": "testMail2@mail.dk",
                     "password": "Password2",
-                    "user_name": {
-                        "first_name": "Rasmus",
-                        "last_name": "koefoed"
-                    }
+                    "first_name": "Rasmus",
+                    "last_name": "koefoed",
+                    "timestamp": Date()
                 },
                 "bookInteractions": [
                     {
-                        "bookId": null,
+                        "bookId": new mongoose.Types.ObjectId(),
                         "intereactionType": "Borrowed"
                     },
                     {
-                        "bookId": null,
+                        "bookId": new mongoose.Types.ObjectId(),
                         "intereactionType": "Borrowed"
                     }
                 ],
                 "favoritedAuthors": [
                     {
-                        "username": "H.P. Lovecraft",
-                        "total_books": 4
+                        "author": new mongoose.Types.ObjectId(),
                     },
                     {
-                        "username": "Jane Austen",
-                        "total_books": 2
+                        "author": new mongoose.Types.ObjectId(),
                     },
                     {
-                        "username": "Thomas Erikson",
-                        "total_books": 8
+                        "author": new mongoose.Types.ObjectId(),
                     }
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": {
+                    "email": "testMail3@mail.dk",
+                    "password": "Password3",
+                    "first_name": "jane",
+                    "last_name": "doe",
+                    "timestamp": Date()
+                },
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Bookmarked"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    }
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": {
+                    "email": "testMail4@mail.dk",
+                    "password": "Password4",
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "timestamp": Date()
+                },
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
                 ]
             }
         ];
-        await users.insertMany(userData);
+        await User.insertMany(userData);
         console.log("Done seeding users for mongo");
     }catch(err){
         logger.error(err);
@@ -109,10 +171,17 @@ const bookSeed = async (db: any) => {
                     "description": "A mighty adventure"
                 }
             ],
-            "author": {
-                "username": "H.P. Lovecraft",
-                "total_books": 4
-            }
+            "reviews": [
+                {
+                    "user": new mongoose.Types.ObjectId(),
+                    "stars": 5,
+                },
+                {
+                    "user": new mongoose.Types.ObjectId(),
+                    "stars": 3,
+                }
+            ],
+            "author": new mongoose.Types.ObjectId()
         },
         {
             "title": "Pride and prejudice",
@@ -131,10 +200,13 @@ const bookSeed = async (db: any) => {
                     "description": "A mighty adventure"
                 }
             ],
-            "author": {
-                "username": "Jane Austen",
-                "total_books": 2
-            }
+            "reviews": [
+                {
+                    "user": new mongoose.Types.ObjectId(),
+                    "stars": 3,
+                }
+            ],
+            "author": new mongoose.Types.ObjectId()
         },
         {
             "title": "Omringet af idioter",
@@ -153,10 +225,17 @@ const bookSeed = async (db: any) => {
                     "description": "Teach me, senpai"
                 }
             ],
-            "author": {
-                "username": "Thomas Erikson",
-                "total_books": 1
-            }
+            "reviews": [
+                {
+                    "user": new mongoose.Types.ObjectId(),
+                    "stars": 3,
+                },
+                {
+                    "user": new mongoose.Types.ObjectId(),
+                    "stars": 1,
+                }
+            ],
+            "author": new mongoose.Types.ObjectId()
         },
         {
             "title": "UML for beginners",
@@ -183,10 +262,7 @@ const bookSeed = async (db: any) => {
                     "description": "Unified Modeling Language"
                 }
             ],
-            "author": {
-                "username": "Thomas Erikson",
-                "total_books": 7
-            }
+            "author": new mongoose.Types.ObjectId()
         },
         {
 
@@ -214,12 +290,9 @@ const bookSeed = async (db: any) => {
                     "description": "Teach me, senpai"
                 }
             ],
-            "author": {
-                "username": "Harper Lee",
-                "total_books": 8
-            }
+            "author": new mongoose.Types.ObjectId(),
         }];
-        await books.insertMany(bookData);
+        await Book.insertMany(bookData);
         console.log("Done seeding books for mongo");
     }catch(err){
         logger.error(err);
@@ -266,7 +339,7 @@ const authorSeed = async (db: any) => {
                 "total_books": 12
             }
         ];
-        await authors.insertMany(authorData);
+        await Author.insertMany(authorData);
         console.log("Done seeding authors for mongo");
     }catch(err){
         logger.error(err);

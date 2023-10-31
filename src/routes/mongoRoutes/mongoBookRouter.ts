@@ -48,5 +48,25 @@ async function getBookByIdMongo(id:string) {
     }
 }
 
+router.get("/mongo/users", async (req, res) => {
+    try {
+        const result = await getAllUsersMongo();
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error in getting all users: [Mongo getAllUsers, 1]",error);
+        res.status(500).send(error);
+    }
+});
+
+async function getAllUsersMongo(){
+    try {
+        const users = await Book.find({});
+        return users;
+    } catch (error) {
+        logger.error("Error in getting all users: [Mongo getAllUsers, 2]",error);
+        throw error;
+    }
+}
+
 export default router;
 
