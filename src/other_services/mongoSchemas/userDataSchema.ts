@@ -8,21 +8,19 @@ const userSchema = new Schema({
     user_data: {
         email: { type: String, required: true },
         password: { type: String, required: true },
-        user_name: {
-            first_name: { type: String, required: true },
-            last_name: { type: String, required: true }
-        }
+        first_name: { type: String, required: true },
+        last_name: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now }
     },
     bookInteractions: [
         {
-            bookId: { type: mongoose.Types.ObjectId, default: null },
+            bookId: { type: Schema.Types.ObjectId, ref: 'Book' },
             intereactionType: { type: String, enum: ['Borrowed', 'Read', 'Bookmarked'] }
         }
     ],
     favoritedAuthors: [
         {
-            username: { type: String },
-            total_books: { type: Number }
+            author: { type: Schema.Types.ObjectId, ref: 'Author' }
         }
     ]
 });

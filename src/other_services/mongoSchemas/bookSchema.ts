@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
@@ -12,15 +13,22 @@ const bookSchema = new Schema({
     tags: [
         {
             title: { type: String, required: true },
-            description: { type: String, required: true }
+            description: { type: String }
         }
     ],
-    author: {
-        username: { type: String, required: true },
-        total_books: { type: Number, required: true }
-    }
+    reviews: [
+        {
+            user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+            stars: { type: Number, required: true },
+        }
+    ],
+    author: { type: Schema.Types.ObjectId, ref: 'Author' }
 });
 
 const Book = mongoose.model('Book', bookSchema);
 
 export default Book;
+
+
+// remove desc for tags
+// author is a reference 
