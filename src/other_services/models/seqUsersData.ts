@@ -6,7 +6,7 @@ export class UserData extends Model {
     declare name_id: number;
     declare user_id: number;
     declare email: string;
-    declare password: string;
+    declare pass: string;
     declare snap_timestamp: string;
 }
     UserData.init({
