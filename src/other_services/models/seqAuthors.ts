@@ -1,5 +1,6 @@
 import { DataTypes, Model} from "sequelize";
 import sequelize from "../sequalizerConnection";
+import { Book } from "./seqBooks";
 export class Author extends Model {
     declare author_id: number;
     declare username: string;
@@ -29,5 +30,3 @@ export class Author extends Model {
         timestamps: false,
         createdAt: false,
     });
-
-    console.log(Author == sequelize.models.Author ? "Author model made correctly" : "Cannot make author model");

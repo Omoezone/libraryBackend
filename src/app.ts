@@ -22,15 +22,15 @@ app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
-app.use(mongoBookRouter)
+//app.use(mongoBookRouter)
 
 // --- auth and sync sequelize
 sequalizeAuth();
 sequelizeSync();
 
 // --- test mongoDB connection
-connectToMongoDB();
-seedData();
+//connectToMongoDB();
+//seedData();
 
 // --- Cronjob migration for the database 
 // job.start();
@@ -39,7 +39,7 @@ seedData();
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
-    mongoDbClient.close();
+    //mongoDbClient.close();
     console.log('See u later, silly!');
     process.exit(0); 
 });

@@ -1,13 +1,13 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
+import sequelize from "../sequalizerConnection";
+import { Book } from './seqBooks';
 
-class Review extends Model {
+export class Review extends Model {
     declare review_id: number;
     declare stars: number;
     declare user_id: number;
     declare book_id: number;
 }
-
-export default (sequelize: Sequelize) => {
     Review.init(
         {
             review_id: {
@@ -37,4 +37,3 @@ export default (sequelize: Sequelize) => {
             createdAt: false,
         }
     );
-};
