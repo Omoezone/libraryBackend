@@ -2,6 +2,7 @@ import express from "express";
 import { Request } from "express";
 import logger from "../other_services/winstonLogger";
 import { Book } from "../other_services/models/seqBooks";
+import { Book as Books, Author, Review } from "../other_services/models/seqModels";
 import { QueryTypes } from "sequelize";
 import sequelize from "../other_services/sequalizerConnection";
 
@@ -13,6 +14,7 @@ router.use(express.json());
 router.get("/books", async (req, res) => {
     try {
         const result = await getAllBooks();
+        console.log(result);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error getting all books: [getAllbooks, 1]", error);
@@ -22,7 +24,18 @@ router.get("/books", async (req, res) => {
 
 export async function getAllBooks() {
     try {
-        const books = await Book.findAll();
+        const books = await Books.findAll({
+            include: [
+                {
+                    model: Review,
+                    attributes: ["stars", "user_id"],
+                },
+                {
+                    model: Author,
+                    attributes: ["author_id", "username", "total_books"],
+                },
+            ],
+        });
         const bookArray = books.map((book) => book.toJSON());
         return bookArray;
     } catch (error) {
@@ -30,7 +43,7 @@ export async function getAllBooks() {
         throw error;
     }
 }
- 
+
 // --------------------  Get book with author username --------------------
 router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
     try {

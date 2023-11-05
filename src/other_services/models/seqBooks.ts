@@ -1,5 +1,7 @@
 import { DataTypes, Model} from "sequelize";
 import sequelize from "../sequalizerConnection";
+import { Author } from "./seqAuthors";
+import { Review } from "./seqReview";
 
 export class Book extends Model {
     declare book_id: number;
@@ -26,7 +28,7 @@ export class Book extends Model {
             allowNull: true,
         },
         summary: {
-            type: DataTypes.STRING(45),
+            type: DataTypes.STRING(800),
             allowNull: false,
         },
         pages: {
@@ -54,7 +56,5 @@ export class Book extends Model {
         tableName: 'books',
         timestamps: false,
         createdAt: false,
-    });
-
-    console.log(Book === sequelize.models.Book); 
-
+    }
+);
