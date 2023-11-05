@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const driver = neo4j.driver(
-    "bolt://localhost:7687",
+    process.env.NEO4J_DB_HOST as string,
     neo4j.auth.basic(process.env.NEO4J_DB_USERNAME as string, process.env.NEO4J_DB_PASSWORD as string)
 );
 
