@@ -2,7 +2,7 @@ import { DataTypes, Model} from "sequelize";
 import sequelize from "../sequalizerConnection";
 import { Author } from "./seqAuthors";
 import { Review } from "./seqReview";
-
+ 
 export class Book extends Model {
     declare book_id: number;
     declare title: string;

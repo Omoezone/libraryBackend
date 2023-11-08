@@ -2,7 +2,7 @@ import express from "express";
 import { Request } from "express";
 import logger from "../other_services/winstonLogger";
 import { Book } from "../other_services/models/seqBooks";
-import { Book as Books, Author, Review } from "../other_services/models/seqModels";
+import { Book as Books, Author, Review, Tag } from "../other_services/models/seqModels";
 import { QueryTypes } from "sequelize";
 import sequelize from "../other_services/sequalizerConnection";
 
@@ -33,6 +33,13 @@ export async function getAllBooks() {
                 {
                     model: Author,
                     attributes: ["author_id", "username", "total_books"],
+                },
+                {
+                    model: Tag,
+                    attributes: ["title", "tag_description"],
+                    through: {
+                        attributes: [], 
+                    }
                 },
             ],
         });
