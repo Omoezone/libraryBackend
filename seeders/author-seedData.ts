@@ -1,7 +1,8 @@
 'use strict';
 import sequelize from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { QueryInterface } from 'sequelize/types';
-
+/*
 module.exports = {
   up: async (queryInterface:any, Sequelize:any) => {
     const famousAuthors = [
@@ -49,3 +50,4 @@ module.exports = {
     await queryInterface.bulkDelete('authors', null, {});
   },
 };
+*/

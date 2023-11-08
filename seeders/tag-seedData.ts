@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 module.exports = {
     up: async (queryInterface: any, Sequelize:any) => {
         const tags = [
@@ -37,3 +37,4 @@ module.exports = {
         await queryInterface.bulkDelete('tags', null, {});
     },
 };
+*/

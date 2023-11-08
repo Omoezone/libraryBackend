@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const userNamesData = [
@@ -34,3 +34,4 @@ module.exports = {
     await queryInterface.bulkDelete('user_names', null, {});
   },
 };
+*/
