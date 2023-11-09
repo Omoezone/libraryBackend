@@ -1,15 +1,14 @@
 import express from "express";
-import { UserData } from "../other_services/models/seqUsersData";
 import bcrypt from "bcrypt";
 import sequelize from "../other_services/sequalizerConnection";
-import { Sequelize, QueryTypes, ValidationError } from 'sequelize';
+import { QueryTypes } from 'sequelize';
+import { User, UserData, UserName } from "../other_services/models/seqModels";
 
 const router = express.Router();
 router.use(express.json());
 
 router.post("/auth/login", async (req, res) => {
     try {
-        console.log(req.body.email, req.body.password)
         const result: any = await getUser(req.body.email, req.body.password);
         console.log("result", result)
         res.status(200).send(result);
@@ -21,7 +20,14 @@ router.post("/auth/login", async (req, res) => {
 
 export async function getUser(mail: string, password: string) {
     try {
-        const user = await UserData.findOne({ where: { email: mail } });
+        const user = await UserData.findOne({ 
+            where: { email: mail },
+            include: [
+                {
+                    model: UserName,
+                    attributes: ["first_name", "last_name"],
+                }
+            ]}); 
         if (!user) {
             throw new Error("No user found with the given email");
         } else if (!bcrypt.compareSync(password, user.pass)) {
@@ -30,9 +36,8 @@ export async function getUser(mail: string, password: string) {
             console.log(user);
             return user; // Remember to remove the password from the returned user object
         }
-
     } catch (error) {
-        throw error; // Re-throw the error so it can be caught in the router
+        throw error; 
     }
 }
 

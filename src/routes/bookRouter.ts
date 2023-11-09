@@ -14,7 +14,6 @@ router.use(express.json());
 router.get("/books", async (req, res) => {
     try {
         const result = await getAllBooks();
-        console.log(result);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error getting all books: [getAllbooks, 1]", error);
