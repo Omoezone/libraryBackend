@@ -124,7 +124,6 @@ Review.init(
             validate: {
                 min: 1,
                 max: 5,
-                msg: 'Stars must be between 1 and 5',
             },
         },
         user_id: {
