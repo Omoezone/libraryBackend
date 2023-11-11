@@ -2,8 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import sequelize from "../other_services/sequalizerConnection";
 import { QueryTypes } from 'sequelize';
-import { User, UserData, UserName } from "../other_services/models/seqModels";
-import { Sequelize, QueryTypes, ValidationError } from 'sequelize';
+import { UserData, UserName } from "../other_services/models/seqModels";
 import jwt from "jsonwebtoken";
 import env from "dotenv";
 
