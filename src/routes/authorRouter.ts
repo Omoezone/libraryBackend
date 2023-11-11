@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request } from 'express';
-import { Author } from '../other_services/models/seqAuthors';
+import { Author } from '../other_services/models/seqModels';
 import logger from '../other_services/winstonLogger';
 
 const router = express.Router();

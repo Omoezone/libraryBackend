@@ -21,6 +21,10 @@ Author.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
+            validate: {
+                min: 0,
+                max : 100,
+            },
         },
     },
     {
@@ -63,16 +67,29 @@ export class Book extends Model {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
+            validate: {
+                min: 0,
+                // Come on, no one will write a book with more than 1000 pages
+                max : 1000,
+            },
         },
         amount: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
+            validate: {
+                min: 0,
+                max : 100,
+            },
         },
         available_amount: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
+            validate: {
+                min: 0,
+                max : 100,
+            },
         },
         author_id: {
             type: DataTypes.INTEGER,
@@ -93,7 +110,7 @@ export class Review extends Model {
     declare user_id: number;
     declare book_id: number;
 }
-Review.init(
+Review.init( 
     {
         review_id: {
             type: DataTypes.INTEGER,
@@ -104,6 +121,10 @@ Review.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 3,
+            validate: {
+                min: 1,
+                max: 5,
+            },
         },
         user_id: {
             type: DataTypes.INTEGER,
@@ -246,6 +267,9 @@ export class UserData extends Model {
         pass: {
             type: DataTypes.STRING(50),
             allowNull: false,
+            validate: {
+                len: [8, 50],
+            },
         },
         snap_timestamp: {
             type: DataTypes.DATE,
@@ -274,10 +298,18 @@ UserName.init(
         first_name: {
             type: DataTypes.STRING(45),
             allowNull: false,
+            validate: {
+                isAlpha: true,
+                len: [2, 45],
+            },
         },
         last_name: {
             type: DataTypes.STRING(45),
             allowNull: false,
+            validate: {
+                isAlpha: true,
+                len: [2, 45],
+            },
         },
     },
     {
@@ -289,6 +321,43 @@ UserName.init(
     }
 );
 
+export class BookInteraction extends Model {
+    declare book_interaction_id: number;
+    declare user_id: number;
+    declare book_id: number;
+    declare interaction_type: string;
+}
+BookInteraction.init(
+    {
+        book_interaction_id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        book_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        interaction_type: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+            validate: {
+                isIn: [['Borrowed', 'Bookmarked', 'Has_Borrowed']],
+            },
+        },
+    },
+    {
+        sequelize,
+        modelName: 'BookInteraction',
+        tableName: 'book_interactions',
+        timestamps: false,
+        createdAt: false,
+    }
+);
 
 Book.belongsTo(Author, { foreignKey: 'author_id' });
 Author.hasMany(Book, { foreignKey: 'author_id' });
@@ -299,3 +368,6 @@ User.hasOne(UserData, {foreignKey: 'user_id'});
 UserData.belongsTo(User, {foreignKey: 'user_id'});
 UserData.belongsTo(UserName, {foreignKey: 'name_id'});
 UserName.hasMany(UserData, {foreignKey: 'name_id'});  
+BookInteraction.belongsTo(User, {foreignKey: 'user_id'});
+BookInteraction.belongsTo(Book, {foreignKey: 'book_id'});
+User.hasMany(BookInteraction, {foreignKey: 'user_id'});
