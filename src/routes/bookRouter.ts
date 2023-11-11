@@ -1,7 +1,6 @@
 import express from "express";
 import { Request } from "express";
 import logger from "../other_services/winstonLogger";
-import { Book } from "../other_services/models/seqBooks";
 import { Book as Books, Author, Review, Tag } from "../other_services/models/seqModels";
 import { QueryTypes } from "sequelize";
 import sequelize from "../other_services/sequalizerConnection";
@@ -66,7 +65,7 @@ export async function getBookById(id: number) {
         const results = await sequelize.query(`CALL get_book_with_author(?)`, {
             replacements: [id],
             type: QueryTypes.RAW,
-            model: Book,
+            model: Books,
         });
         if(!results) {
             logger.error("No book found with the given id: [getBookById, 2]")
@@ -97,7 +96,7 @@ router.get("/books/:range", async (req, res) => {
 
 export async function getBooksUpToFinishRange(finishRange: number) {
     try {
-        const books = await Book.findAll({
+        const books = await Books.findAll({
             limit: finishRange,
         });
 
@@ -122,9 +121,9 @@ router.post("/book",  async (req, res) => {
     }
 });
 
-export async function createBook(values: Book) {
+export async function createBook(values: Books) {
     try{
-        const book = await Book.create({
+        const book = await Books.create({
             id: values.book_id,
             title: values.title,
             picture: values.picture,

@@ -93,7 +93,7 @@ export class Review extends Model {
     declare user_id: number;
     declare book_id: number;
 }
-Review.init(
+Review.init( 
     {
         review_id: {
             type: DataTypes.INTEGER,
