@@ -10,7 +10,6 @@ router.use(express.json());
 router.post("/auth/login", async (req, res) => {
     try {
         const result: any = await getUser(req.body.email, req.body.password);
-        console.log("result", result)
         res.status(200).send(result);
     } catch (err) {
         console.log(err);
@@ -43,7 +42,6 @@ export async function getUser(mail: string, password: string) {
 
 router.post("/auth/signup", async (req, res) => {
     try {
-        console.log("result", req.body)
         const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
         res.status(200).send(result);
     } catch (err:any) {

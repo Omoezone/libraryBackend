@@ -289,6 +289,45 @@ UserName.init(
     }
 );
 
+export class BookInteraction extends Model {
+    declare book_interaction_id: number;
+    declare user_id: number;
+    declare book_id: number;
+    declare interaction_type: string;
+}
+BookInteraction.init(
+    {
+        book_interaction_id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        book_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        interaction_type: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+            validate: {
+                isIn: [['Borrowed', 'Bookmarked', 'Has_Borrowed']],
+            },
+        },
+    },
+    {
+        sequelize,
+        modelName: 'BookInteraction',
+        tableName: 'book_interactions',
+        timestamps: false,
+        createdAt: false,
+    }
+);
+
+
 
 Book.belongsTo(Author, { foreignKey: 'author_id' });
 Author.hasMany(Book, { foreignKey: 'author_id' });
@@ -299,3 +338,6 @@ User.hasOne(UserData, {foreignKey: 'user_id'});
 UserData.belongsTo(User, {foreignKey: 'user_id'});
 UserData.belongsTo(UserName, {foreignKey: 'name_id'});
 UserName.hasMany(UserData, {foreignKey: 'name_id'});  
+BookInteraction.belongsTo(User, {foreignKey: 'user_id'});
+BookInteraction.belongsTo(Book, {foreignKey: 'book_id'});
+User.hasMany(BookInteraction, {foreignKey: 'user_id'});

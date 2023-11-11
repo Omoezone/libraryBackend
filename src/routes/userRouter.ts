@@ -2,6 +2,8 @@ import express from "express";
 import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
 import bcrypt from "bcrypt";
+import { BookInteraction } from "../other_services/models/seqModels";
+import logger from "../other_services/winstonLogger";
 
 const router = express.Router();
 router.use(express.json());
@@ -84,4 +86,28 @@ export async function updateUser(id: string, values: any) {
     }
 }
 
+router.post("/user/:id/borrow/:bookId", async (req, res) => {
+    try{
+        const result = await bookInteraction(req.params.id, req.params.bookId, "Borrowed");
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error("Error in creating a new author: [createBorrowBook, 1]", err)
+        res.status(500).json("Internal server error");
+    }
+});
+
+export async function bookInteraction(id: string, bookId: string, interaction_type: string) {
+    try {
+        const result = await BookInteraction.create(
+            {
+                user_id: id,
+                book_id: bookId,
+                interaction_type: interaction_type,
+            }
+        );
+        return result;
+    } catch (error) {
+        logger.error("Error in creating a new author: [createBorrowBook, 2]", error);
+    }
+}
 export default router;
