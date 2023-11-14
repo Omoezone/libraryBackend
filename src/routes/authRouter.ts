@@ -1,17 +1,43 @@
 import express from "express";
-import { UserData } from "../other_services/models/seqUsersData";
 import bcrypt from "bcrypt";
 import sequelize from "../other_services/sequalizerConnection";
-import { Sequelize, QueryTypes, ValidationError } from 'sequelize';
+import { QueryTypes } from 'sequelize';
+import { UserData, UserName } from "../other_services/models/seqModels";
+import jwt from "jsonwebtoken";
+import env from "dotenv";
+
+env.config();
 
 const router = express.Router();
 router.use(express.json());
 
 router.post("/auth/login", async (req, res) => {
     try {
-        console.log(req.body.email, req.body.password)
         const result: any = await getUser(req.body.email, req.body.password);
+        let jwtUser = {
+            "users_data_id": result.users_data_id,
+            "name_id": result.name_id,
+            "user_id": result.user_id,
+            "email": result.email,
+            "pass": req.body.password,
+            "snap_timestamp": result.snap_timestamp,
+        }
+        let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
+        console.log("result", resultWithToken)
+        res.status(200).send(resultWithToken);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+router.post("/auth/verify", async (req, res) => {
+    try {
+        let decodedUser: any = jwt.verify(req.body.authToken, "secret");
+        const result: any = await getUser(decodedUser.user.email, decodedUser.user.pass);
+
         console.log("result", result)
+
         res.status(200).send(result);
     } catch (err) {
         console.log(err);
@@ -21,24 +47,28 @@ router.post("/auth/login", async (req, res) => {
 
 export async function getUser(mail: string, password: string) {
     try {
-        const user = await UserData.findOne({ where: { email: mail } });
+        const user = await UserData.findOne({ 
+            where: { email: mail },
+            include: [
+                {
+                    model: UserName,
+                    attributes: ["first_name", "last_name"],
+                }
+            ]}); 
         if (!user) {
             throw new Error("No user found with the given email");
         } else if (!bcrypt.compareSync(password, user.pass)) {
             throw new Error("Incorrect password");
         } else {
-            console.log(user);
             return user; // Remember to remove the password from the returned user object
         }
-
     } catch (error) {
-        throw error; // Re-throw the error so it can be caught in the router
+        throw error; 
     }
 }
 
 router.post("/auth/signup", async (req, res) => {
     try {
-        console.log("result", req.body)
         const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
         res.status(200).send(result);
     } catch (err:any) {

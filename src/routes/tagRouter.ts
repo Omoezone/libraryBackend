@@ -1,6 +1,5 @@
 import express from 'express';
 import conn from '../db_services/mysqlConnSetup';
-import e, { Request } from 'express';
 
 const router = express.Router();
 router.use(express.json());

@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request } from 'express';
-import { Author } from '../other_services/models/seqAuthors';
+import { Author, Book } from '../other_services/models/seqModels';
 import logger from '../other_services/winstonLogger';
 
 const router = express.Router();
@@ -40,7 +40,7 @@ router.get("/author/:id", async (req: Request<{ id: number}>, res) => {
         res.status(500).send(error);
     }
 });
-
+//FIXME: why are we doing | null here?
 export async function getAuthorById(id: number) {
     try{
         const result: Author | null = await Author.findByPk(id);
@@ -52,7 +52,7 @@ export async function getAuthorById(id: number) {
     }
 }
 // create author
-// TODO look into making total_books set automatically prop with trigegrs
+// TODO: look into making total_books set automatically prop with trigegrs
 router.post("/author",  async (req, res) => {
     try{
         const result: Author = await createAuthor(req.body);
@@ -73,6 +73,33 @@ export async function createAuthor(values: Author) {
     }catch(err){
         logger.error("Error in creating a new author: [createAuthor, 2]",err)
         throw err;
+    }
+}
+
+// get all books for author
+router.get("/author/:id/books", async (req: Request<{ id: number}>, res) => {
+    try {
+        const result: Book[] = await getAuthorBooks(req.params.id);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error with fetching all books for author: [getAuthorBooks, 1] ", error);
+        res.status(500).send(error);
+    }
+});
+
+export async function getAuthorBooks(id: number) {
+    try{
+        const result: Book[] = await Book.findAll({
+            where: {
+                author_id: id,
+            }
+        });
+        if(result === null) 
+            throw new Error("No author found with the given id");
+        return result;
+    }catch(error){
+        logger.error("Error with fetching all books for author: [getAuthorBooks, 2] ", error);
+        throw error;
     }
 }
 

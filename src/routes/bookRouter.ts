@@ -1,8 +1,7 @@
 import express from "express";
 import { Request } from "express";
 import logger from "../other_services/winstonLogger";
-import { Book } from "../other_services/models/seqBooks";
-import { Book as Books, Author, Review } from "../other_services/models/seqModels";
+import { Book as Books, Author, Review, Tag } from "../other_services/models/seqModels";
 import { QueryTypes } from "sequelize";
 import sequelize from "../other_services/sequalizerConnection";
 
@@ -14,7 +13,6 @@ router.use(express.json());
 router.get("/books", async (req, res) => {
     try {
         const result = await getAllBooks();
-        console.log(result);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error getting all books: [getAllbooks, 1]", error);
@@ -33,6 +31,13 @@ export async function getAllBooks() {
                 {
                     model: Author,
                     attributes: ["author_id", "username", "total_books"],
+                },
+                {
+                    model: Tag,
+                    attributes: ["title", "tag_description"],
+                    through: {
+                        attributes: [], 
+                    }
                 },
             ],
         });
@@ -60,7 +65,7 @@ export async function getBookById(id: number) {
         const results = await sequelize.query(`CALL get_book_with_author(?)`, {
             replacements: [id],
             type: QueryTypes.RAW,
-            model: Book,
+            model: Books,
         });
         if(!results) {
             logger.error("No book found with the given id: [getBookById, 2]")
@@ -91,7 +96,7 @@ router.get("/books/:range", async (req, res) => {
 
 export async function getBooksUpToFinishRange(finishRange: number) {
     try {
-        const books = await Book.findAll({
+        const books = await Books.findAll({
             limit: finishRange,
         });
 
@@ -116,9 +121,9 @@ router.post("/book",  async (req, res) => {
     }
 });
 
-export async function createBook(values: Book) {
+export async function createBook(values: Books) {
     try{
-        const book = await Book.create({
+        const book = await Books.create({
             id: values.book_id,
             title: values.title,
             picture: values.picture,
