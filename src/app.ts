@@ -32,6 +32,12 @@ sequelizeSync();
 //connectToMongoDB();
 //seedData();
 
+<<<<<<< Updated upstream
+=======
+// --- test neo4j connection
+//getAllUsers();
+
+>>>>>>> Stashed changes
 // --- Cronjob migration for the database 
 // job.start();
 
