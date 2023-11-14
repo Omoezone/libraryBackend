@@ -35,7 +35,7 @@ sequelizeSync();
 //seedData();
 
 // --- test neo4j connection
-//getAllUsers();
+//console.log(getAllUsers());
 
 // --- Cronjob migration for the database 
 // job.start();
@@ -48,7 +48,7 @@ process.on('SIGINT', () => {
     process.exit(0); 
 });
 
-const port = process.env.PORT ?? 3010;
+const port = process.env.PORT ?? 3000;
 app.listen(port, () => {
     console.log(`App is listening on ${port}`);
 });

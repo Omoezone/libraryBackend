@@ -31,7 +31,7 @@ export async function getAllUsers() {
             RETURN u, ud
             `
         );
-
+ 
         const users = result.records.map((record) => ({
             userData: record.get('ud').properties,
             user: record.get('u').properties,
@@ -43,7 +43,7 @@ export async function getAllUsers() {
         });
         return users;
     } catch (error) {
-        await txc.rollback(); // Rollback the transaction in case of an error
+        await txc.rollback();
         console.error('Error retrieving all users:', error);
         throw error;
     }
