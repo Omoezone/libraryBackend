@@ -37,15 +37,8 @@ sequelizeSync();
 // --- test neo4j connection
 //getAllUsers();
 
-<<<<<<< Updated upstream
-=======
-// --- test neo4j connection
-//getAllUsers();
-
->>>>>>> Stashed changes
 // --- Cronjob migration for the database 
 // job.start();
-
 
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
