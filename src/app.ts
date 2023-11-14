@@ -1,6 +1,7 @@
 import express from 'express';
 import { sequalizeAuth, sequelizeSync } from './other_services/sequalizerConnection';
 import mongoDbClient, { connectToMongoDB } from './db_services/mongo/mongoConnSetup';
+import { session, getAllUsers } from './db_services/neo4j/neo4jConnSetup';
 import seedData from './db_services/mongo/mongoSeedData';
 import userRouter from './routes/userRouter';
 import bookRouter from './routes/bookRouter';
@@ -12,6 +13,7 @@ import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
+import { get } from 'http';
 dotenv.config();
 
 const app = express();
@@ -31,6 +33,9 @@ sequelizeSync();
 // --- test mongoDB connection
 //connectToMongoDB();
 //seedData();
+
+// --- test neo4j connection
+//getAllUsers();
 
 <<<<<<< Updated upstream
 =======
