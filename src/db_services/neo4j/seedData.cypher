@@ -7,7 +7,7 @@ CREATE (u:User {
   deleted_at: null
 })-[:HAS_USER_DATA]->(ud:UserData {
   email: 'user' + toString(x) + '@example.com',
-  pass: 'password' + toString(x),
+  password: 'password' + toString(x),
   first_name: "FirstName" + toString(x),
   last_name: "LastName" + toString(x),
   snap_timestamp: timestamp()
