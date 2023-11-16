@@ -10,6 +10,7 @@ env.config();
 const router = express.Router();
 router.use(express.json());
 
+// Create user
 router.post("/neo4j/user", async (req, res) => {
     try {
         const result: any = await createUser(req.body);
@@ -75,6 +76,38 @@ export async function createUser(value: any) {
         };
     }catch (error) {
         console.error('Error creating user:', error);
+    } finally {
+        await session.close();
+    }
+}
+
+// Get all users
+router.get("/neo4j/users", async (req, res) => {
+    try {
+        const result: any = await getAllUsers();
+        res.status(200).send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+export async function getAllUsers() {
+    const session = driver.session();
+
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) RETURN u, ud`
+        );
+        const users = result.records.map((record) => {
+            return {
+                user: record.get('u').properties,
+                userData: record.get('ud').properties
+            };
+        });
+        return users;
+    } catch (error) {
+        console.error('Error getting all users:', error);
     } finally {
         await session.close();
     }
