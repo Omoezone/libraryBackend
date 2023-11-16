@@ -14,4 +14,9 @@
         - (optional) Have mongoCompass installed for easier config and views
         - BE AWARE: If you use the docker instance and have mongo installed locally on you computer, you will need to ensure that they do not expose the sampe port (default is 27017)
     The app init a connection through app.ts and closes it when the app stops. mongoSeedData.ts is also run to clear the documents and create new seed data. 
+<h1>Setup of neo4j</h1>
+    Ensure that you have the following:
+        - The Neo4j server running. This can be done either through a docker container or neo4j Aura. 
+        - Have the env updated with the relevant information. 
+    To visualise the nodes, open the neo4j browser. To see all nodes type command "MATCH (x) RETURN x"
 </pre> 
