@@ -36,7 +36,7 @@ sequelizeSync();
 
 // --- test neo4j connection
 //console.log(getAllUsers());
-seedDataNeo4j();
+//seedDataNeo4j();
 
 // --- Cronjob migration for the database 
 // job.start();
