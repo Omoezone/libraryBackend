@@ -25,7 +25,7 @@ app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
-app.use(neo4jUserRouter)
+//app.use(neo4jUserRouter)
 //app.use(mongoBookRouter)
 
 // --- auth and sync sequelize
