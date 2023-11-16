@@ -1,8 +1,10 @@
 import neo4j from 'neo4j-driver';
 import dotenv from 'dotenv';
+import fs from 'fs';
+
 dotenv.config();
 
-const driver = neo4j.driver(
+export const driver = neo4j.driver(
     process.env.NEO4J_DB_HOST as string,
     neo4j.auth.basic(process.env.NEO4J_DB_USERNAME as string, process.env.NEO4J_DB_PASSWORD as string)
 );
@@ -31,7 +33,7 @@ export async function getAllUsers() {
             RETURN u, ud
             `
         );
- 
+
         const users = result.records.map((record) => ({
             userData: record.get('ud').properties,
             user: record.get('u').properties,
@@ -46,9 +48,26 @@ export async function getAllUsers() {
         await txc.rollback();
         console.error('Error retrieving all users:', error);
         throw error;
+    } finally {
+        await txc.close();
+        session.close();
     }
 }
+// Seed data for neo4j db. It comes from seedData.cypher file
+export async function seedDataNeo4j() {
+    const cypherScript = fs.readFileSync('./src/db_services/neo4j/seedData.cypher', 'utf8');
+    const scriptSession = driver.session();
 
-function closeSession() {
-    session.close();
+    scriptSession.run(cypherScript)
+    .then(result => {
+        result.records.forEach(record => {
+        console.log(record.toObject());
+        });
+    })
+    .catch(error => {
+        console.error('Error executing Cypher script:', error);
+    }).finally(() => {
+        scriptSession.close();
+    });
 }
+
