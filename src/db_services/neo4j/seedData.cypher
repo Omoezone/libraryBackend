@@ -1,4 +1,4 @@
-// Seed Data for 10 users with connected books
+//Seed Data with multi reviews and tags
 UNWIND range(1, 10) AS x  
 CREATE (u:User {
   user_id: toString(timestamp() * 10000 + rand() * 10000),
@@ -15,7 +15,8 @@ CREATE (u:User {
 
 // Books with connections to users
 WITH u, ud
-UNWIND range(1, toInteger(rand() * 8) + 2) AS x  
+UNWIND range(1, toInteger(rand() * 8) + 2) AS bookIndex
+WITH u, ud, toInteger(rand() * 15) + 1 AS x
 CREATE (b:Book {
   book_id: toString(timestamp() * 10000 + rand() * 10000),  
   title: 'Book' + toString(x),
@@ -25,21 +26,27 @@ CREATE (b:Book {
   amount: 4,
   available_amount: 3
 })
-CREATE (r:Review {
-  stars: 4
-})
-CREATE (t:Tag {
-  title: "Tag" + toString(x),
-  tag_description: "Tag" + toString(x) + " Description"
-})
 CREATE (a:Author {
   author_id: toString(timestamp() * 10000 + rand() * 10000),
   username: "Author" + toString(x),
   total_books: 1  // Assuming each user has written one book
 })
-MERGE (b)-[:HAS_TAG]->(t)
-MERGE (b)-[:HAS_REVIEW]->(r)
+
 MERGE (b)-[:HAS_AUTHOR]->(a)
 MERGE (u)-[:READ]->(b)
+
+// Create between 1 and 4 tags for each book
+WITH u, ud, b, x, a
+UNWIND range(1, toInteger(rand() * 4) + 1) AS tagIndex
+CREATE (t:Tag {
+  title: "Tag" + toString(x) + "-" + toString(tagIndex),
+  tag_description: "Tag" + toString(x) + " Description"
+})
+MERGE (b)-[:HAS_TAG]->(t)
+
+CREATE (r:Review {
+  stars: toInteger(rand() * 5) + 1
+})
+MERGE (b)-[:HAS_REVIEW]->(r)
 
 RETURN u, ud, b, r, t, a;
