@@ -9,6 +9,7 @@ import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
 import tagRouter from './routes/tagRouter';
 import authRouter from './routes/authRouter';
+import userTabRouter from './routes/userTabRouter';
 import mongoBookRouter from './routes/mongoRoutes/mongoBookRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
@@ -24,6 +25,7 @@ app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
+app.use(userTabRouter);
 //app.use(mongoBookRouter)
 
 // --- auth and sync sequelize
