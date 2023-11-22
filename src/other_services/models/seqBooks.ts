@@ -4,7 +4,7 @@ import sequelize from "../sequalizerConnection";
 export class Book extends Model {
     declare book_id: number;
     declare title: string;
-    declare picture: string;
+    declare picture: string | null;
     declare summary: string;
     declare pages: number;
     declare amount: number;
@@ -23,7 +23,7 @@ export class Book extends Model {
         },
         picture: {
             type: DataTypes.STRING(45),
-            allowNull: false,
+            allowNull: true,
         },
         summary: {
             type: DataTypes.STRING(45),
