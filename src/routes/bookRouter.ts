@@ -1,7 +1,7 @@
 import express from "express";
 import { Request } from "express";
 import logger from "../other_services/winstonLogger";
-import { Book } from "../other_services/models/seqBooks";
+import { Book as Books, Author, Review, Tag } from "../other_services/models/seqModels";
 import { QueryTypes } from "sequelize";
 import sequelize from "../other_services/sequalizerConnection";
 
@@ -22,7 +22,25 @@ router.get("/books", async (req, res) => {
 
 export async function getAllBooks() {
     try {
-        const books = await Book.findAll();
+        const books = await Books.findAll({
+            include: [
+                {
+                    model: Review,
+                    attributes: ["stars", "user_id"],
+                },
+                {
+                    model: Author,
+                    attributes: ["author_id", "username", "total_books"],
+                },
+                {
+                    model: Tag,
+                    attributes: ["title", "tag_description"],
+                    through: {
+                        attributes: [], 
+                    }
+                },
+            ],
+        });
         const bookArray = books.map((book) => book.toJSON());
         return bookArray;
     } catch (error) {
@@ -30,7 +48,7 @@ export async function getAllBooks() {
         throw error;
     }
 }
- 
+
 // --------------------  Get book with author username --------------------
 router.get("/book/:id", async (req: Request<{ id: number}>, res) => {
     try {
@@ -47,7 +65,7 @@ export async function getBookById(id: number) {
         const results = await sequelize.query(`CALL get_book_with_author(?)`, {
             replacements: [id],
             type: QueryTypes.RAW,
-            model: Book,
+            model: Books,
         });
         if(!results) {
             logger.error("No book found with the given id: [getBookById, 2]")
@@ -60,6 +78,38 @@ export async function getBookById(id: number) {
     }
 }
 
+
+// --------------------- Get range of books ---------------------
+router.get("/books/:range", async (req, res) => {
+    
+    try {
+           const finishRange = Number(req.params.range);
+            const result = await getBooksUpToFinishRange(finishRange);
+            res.status(200).send(result);
+        }
+    catch (error) {
+        logger.error("Error getting books up to finish range: [getBooksUpToFinishRange]", error);
+        res.status(500).send(error);
+    }
+
+});
+
+export async function getBooksUpToFinishRange(finishRange: number) {
+    try {
+        const books = await Books.findAll({
+            limit: finishRange,
+        });
+
+        const bookArray = books.map((book) => book.toJSON());
+        return bookArray;
+    } catch (error) {
+        logger.error("Error getting books up to finish range: [getBooksUpToFinishRange]", error);
+        throw error;
+    }
+}
+
+
+
 // --------------------- Create book ---------------------
 router.post("/book",  async (req, res) => {
     try{
@@ -71,9 +121,9 @@ router.post("/book",  async (req, res) => {
     }
 });
 
-export async function createBook(values: Book) {
+export async function createBook(values: Books) {
     try{
-        const book = await Book.create({
+        const book = await Books.create({
             id: values.book_id,
             title: values.title,
             picture: values.picture,
