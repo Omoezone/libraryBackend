@@ -11,6 +11,7 @@ import tagRouter from './routes/tagRouter';
 import authRouter from './routes/authRouter';
 import userTabRouter from './routes/userTabRouter';
 import mongoBookRouter from './routes/mongoRoutes/mongoBookRouter';
+import neo4jUserRouter from './routes/neo4jRoutes/neo4jUserRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
@@ -26,6 +27,7 @@ app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
 app.use(userTabRouter);
+//app.use(neo4jUserRouter)
 //app.use(mongoBookRouter)
 
 // --- auth and sync sequelize
