@@ -2,7 +2,7 @@ import express from "express";
 import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
 import bcrypt from "bcrypt";
-import { BookInteraction, Review } from "../other_services/models/seqModels";
+import { Book, BookInteraction, Review } from "../other_services/models/seqModels";
 import logger from "../other_services/winstonLogger";
 
 const router = express.Router();
@@ -27,7 +27,6 @@ export async function getUserById(id: number) {
     const connection = await conn.getConnection();
     try{
         const [rows] = await connection.query(`CALL get_user_information(?)`, [id]);
-        console.log("User fetched successfully: ", rows);
         connection.release();
         return rows;
     }catch(err){
@@ -151,6 +150,35 @@ async function getBookInteraction(id: string, bookId: string, interaction_type: 
         return result;
     } catch (error) {
         logger.error("Error in getting a bookInteractions: [getBookmarkBook, 2]", error);
+    }
+}
+router.get("/user/:id/bookmarked/", async (req, res) => {
+    try{
+        const result = await getBookInteractionByUser(req.params.id, "Borrowed");
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error("Error in getting a bookInteractions: [getBorrowedBook, 1]", err)
+        res.status(500).json("Internal server error");
+    }
+});
+
+async function getBookInteractionByUser(id: string, interaction_type: string) {
+    try {
+        const result = await BookInteraction.findAll({
+            where: {
+                user_id: id,
+                interaction_type: interaction_type,
+            },
+            include: [
+                {
+                    model: Book,
+                    attributes: ["title", "book_id"],
+                }
+            ],
+        });
+        return result;
+    } catch (error) {
+        logger.error("Error in getting a bookInteractions: [getBorrowedBook, 2]", error);
     }
 }
 

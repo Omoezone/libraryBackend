@@ -23,7 +23,6 @@ router.post("/auth/login", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        console.log("result", resultWithToken)
         res.status(200).send(resultWithToken);
     } catch (err) {
         console.log(err);
@@ -35,9 +34,6 @@ router.post("/auth/verify", async (req, res) => {
     try {
         let decodedUser: any = jwt.verify(req.body.authToken, "secret");
         const result: any = await getUser(decodedUser.user.email, decodedUser.user.pass);
-
-        console.log("result", result)
-
         res.status(200).send(result);
     } catch (err) {
         console.log(err);
@@ -95,7 +91,6 @@ export async function createUser(first_name: string, last_name:string, email: st
             type: QueryTypes.RAW,
             model: UserData,
         });
-        console.log("Succesfully created user")
         return {user_id: result[0].user_id, email: result[0].email}; // Code 200
     } catch (error) {
         throw error; // Re-throw the error so it can be caught in the router

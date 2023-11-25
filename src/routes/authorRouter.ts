@@ -21,7 +21,6 @@ export async function getAllAuthors() {
     try{
         const result: Author[] = await Author.findAll();
         if(!result) throw new Error("No authors found");
-        console.log(result.every((author) => author instanceof Author));
         const authorArray = result.map((author) => author.toJSON());
         return authorArray;
     }catch(error){

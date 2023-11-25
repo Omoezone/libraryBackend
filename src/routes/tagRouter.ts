@@ -19,7 +19,6 @@ export async function getAllTags() {
     const connection = await conn.getConnection();
     try{
         const [rows] = await connection.query(`SELECT * FROM tags`);
-        console.log("Tags fetched successfully: ", rows);
         connection.release();
         return rows;
     }catch(err){
@@ -43,7 +42,6 @@ export async function createTag(values: any) {
     const connection = await conn.getConnection();
     try{
         const [rows] = await connection.query(`INSERT INTO tags (title, tag_description) VALUES (?,?)`, [values.title, values.tag_description]);
-        console.log("Tag created successfully: ", rows);
         connection.release();
         return rows;
     }catch(err){
@@ -67,7 +65,6 @@ export async function addTagToBook(values: any) {
     const connection = await conn.getConnection();
     try{
         const [rows] = await connection.query(`INSERT INTO tag_books (book_id, tag_id) VALUES (?,?)`, [values.book_id, values.tag_id]);
-        console.log("Tag added to book successfully: ", rows);
         connection.release();
         return rows;
     }catch(err){

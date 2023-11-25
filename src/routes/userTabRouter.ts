@@ -29,7 +29,7 @@ async function getBookmarks(user_id: number) {
             include: [
                 {
                   model: Book,
-                  attributes: ['title']
+                  attributes: ['title', 'book_id']
                 }
             ]
         });
