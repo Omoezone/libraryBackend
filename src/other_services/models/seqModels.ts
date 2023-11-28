@@ -360,6 +360,7 @@ BookInteraction.init(
 );
 
 export class FavoritedAuthor extends Model {
+    declare favorited_id: number;
     declare user_id: number;
     declare author_id: number;
 }
