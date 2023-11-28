@@ -1,7 +1,8 @@
 import express from 'express';
 import { Request } from 'express';
-import { Author, Book } from '../other_services/models/seqModels';
+import { Author, Book, FavoritedAuthor } from '../other_services/models/seqModels';
 import logger from '../other_services/winstonLogger';
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const router = express.Router();
 router.use(express.json());
@@ -98,6 +99,91 @@ export async function getAuthorBooks(id: number) {
         return result;
     }catch(error){
         logger.error("Error with fetching all books for author: [getAuthorBooks, 2] ", error);
+        throw error;
+    }
+}
+
+// Get favorited author
+router.get("/user/:id/author/:authorid", async (req, res) => {
+    try {
+        const result = await getFavoritedAuthor(req.params.id, req.params.authorid);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error with getting a favorited ", error);
+        res.status(500).send(error);
+    }
+});
+
+export async function getFavoritedAuthor(id: string, authorid: string) {
+    try{
+        const result: FavoritedAuthor | null = await FavoritedAuthor.findOne({
+            where: {
+                author_id: authorid,
+                user_id: id,
+            }
+        });
+        return result;
+    } catch (error){
+        logger.error("Error with getting a favorited connection", error);
+        throw error;
+    }
+}
+
+// Create favorited author
+router.post("/user/:userid/author/:authorid", async (req, res) => {
+    try {
+        const clones = await FavoritedAuthor.findAll({
+            where: {
+                user_id: req.params.userid,
+                author_id: req.params.authorid,
+            }
+        });
+        if(clones.length > 0) {
+            res.status(200).send("Already favorited");
+            return;
+        }
+        const result = await createFavoritedAuthor(req.params.userid, req.params.authorid);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error with creating a favorited ", error);
+        res.status(500).send(error);
+    }
+});
+
+export async function createFavoritedAuthor(id: string, authorid: string) {
+    try{
+        const result: FavoritedAuthor = await FavoritedAuthor.create({
+            author_id: authorid,
+            user_id: id,
+        });
+        return result;
+    } catch (error){
+        logger.error("Error with creating a favorited connection", error);
+        throw error;
+    }
+}
+
+router.delete("/user/:userid/author/:authorid", async (req, res) => {
+    try {
+        const result = await deleteFavoritedAuthor(req.params.userid, req.params.authorid);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error with deleting a favorited ", error);
+        res.status(500).send(error);
+    }
+});
+
+export async function deleteFavoritedAuthor(id: string, authorid: string) {
+    try{
+        const result: number = await FavoritedAuthor.destroy({
+            where: {
+                author_id: authorid,
+                user_id: id,
+            }
+        });
+        return result;
+    } catch (error){
+        logger.error("Error with deleting a favorited connection", error);
         throw error;
     }
 }

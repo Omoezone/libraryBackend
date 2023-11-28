@@ -122,7 +122,6 @@ async function getFavoritedAuthors(user_id: number) {
             include: [
                 {
                   model: Author,
-                  attributes: ['username']
                 }
             ]
         });
