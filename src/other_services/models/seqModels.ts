@@ -267,13 +267,11 @@ export class UserData extends Model {
         pass: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            validate: {
-                len: [8, 50],
-            },
         },
         snap_timestamp: {
             type: DataTypes.DATE,
             allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
     }, { 
         sequelize,

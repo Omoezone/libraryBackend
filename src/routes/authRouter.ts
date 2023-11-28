@@ -23,6 +23,7 @@ router.post("/auth/login", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
+        
         res.status(200).send(resultWithToken);
     } catch (err) {
         console.log(err);
@@ -50,7 +51,10 @@ export async function getUser(mail: string, password: string) {
                     model: UserName,
                     attributes: ["first_name", "last_name"],
                 }
-            ]}); 
+            ],
+            order: [["snap_timestamp", "DESC"]], 
+            limit: 1,
+        }); 
         if (!user) {
             throw new Error("No user found with the given email");
         } else if (!bcrypt.compareSync(password, user.pass)) {
