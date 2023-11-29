@@ -205,6 +205,37 @@ async function deleteBookInteraction(id: string, bookId: string, interaction_typ
         logger.error("Error in deleting a bookInteractions: [deleteBookmarkBook, 2]", error);
     }
 }
+
+// Return book
+router.put("/user/:id/return/:bookId", async (req, res) => {
+    try{
+        const result = await returnBook(req.params.id, req.params.bookId);
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error("Error in returning a book: [returnBook, 1]", err)
+        res.status(500).json("Internal server error");
+    }
+});
+
+export async function returnBook(id: string, bookId: string) {
+    try {
+        const result = await BookInteraction.update(
+            { 
+                interaction_type: "Has_Borrowed",
+            },
+            {
+                where: {
+                    user_id: id,
+                    book_id: bookId,
+                    interaction_type: "Borrowed",
+                }
+            });
+        
+        return result;
+    } catch (error) {
+        logger.error("Error in returning a book: [returnBook, 2]", error);
+    }
+}
 // Create review
 router.post("/user/:id/review/:bookId/:stars", async (req, res) => {
     try{
