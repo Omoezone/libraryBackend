@@ -31,6 +31,29 @@ router.post("/auth/login", async (req, res) => {
     }
 });
 
+router.post("/auth/signup", async (req, res) => {
+    try {
+        const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
+        let jwtUser = {
+            "users_data_id": result.users_data_id,
+            "name_id": result.name_id,
+            "user_id": result.user_id,
+            "email": result.email,
+            "pass": req.body.password,
+            "snap_timestamp": result.snap_timestamp,
+        }
+        let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
+        res.status(200).send(resultWithToken);
+    } catch (err:any) {
+        if (err.code == 409){
+            res.status(409).send(err.message);
+        } else {
+            res.status(500).send("Something went wrong while creating user");
+        }
+        console.log(err);
+    }
+});
+
 router.post("/auth/verify", async (req, res) => {
     try {
         let decodedUser: any = jwt.verify(req.body.authToken, "secret");
@@ -67,21 +90,6 @@ export async function getUser(mail: string, password: string) {
     }
 }
 
-router.post("/auth/signup", async (req, res) => {
-    try {
-        const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
-        res.status(200).send(result);
-    } catch (err:any) {
-        if (err.code == 409){
-            res.status(409).send(err.message);
-        } else {
-            res.status(500).send("Something went wrong while creating user");
-        }
-        console.log(err);
-        
-    }
-});
-
 export async function createUser(first_name: string, last_name:string, email: string, password: string) {
     try {
         const alreadyExists = await UserData.findOne({ where: { email: email } }); // Code 409
@@ -95,7 +103,8 @@ export async function createUser(first_name: string, last_name:string, email: st
             type: QueryTypes.RAW,
             model: UserData,
         });
-        return {user_id: result[0].user_id, email: result[0].email}; // Code 200
+        let createdUser = getUser(email, password);
+        return createdUser;
     } catch (error) {
         throw error; // Re-throw the error so it can be caught in the router
     }

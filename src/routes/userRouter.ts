@@ -4,6 +4,7 @@ import conn from "../db_services/mysqlConnSetup";
 import bcrypt from "bcrypt";
 import { Book, BookInteraction, Review } from "../other_services/models/seqModels";
 import logger from "../other_services/winstonLogger";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const router = express.Router();
 router.use(express.json());
@@ -61,11 +62,17 @@ export async function createUser(values: any) {
 }
 
 // update user data
-// TODO look into params to be number
-router.post("/user/:id", async (req, res) => {
+router.post("/user/:id/update", async (req, res) => {
     try{
-        req.body.password = await bcrypt.hash(req.body.password, 10);
-        const result = await updateUser(req.params.id, req.body);
+        console.log("Req body", req.body)
+        const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
+        console.log("JWT", userdata)
+        let paramsId: number = parseInt(req.params.id);
+        if(userdata.user.users_data_id != paramsId) {
+            res.status(401).json("You are not authorized to query for this user's borrowed books");
+        }
+        req.body.user.password = await bcrypt.hash(req.body.user.password, 10);
+        const result = await updateUser(paramsId, req.body.user);
         res.status(200).json(result);
     } catch (err) {
         console.log(err);
@@ -73,7 +80,7 @@ router.post("/user/:id", async (req, res) => {
     }
 });
 
-export async function updateUser(id: string, values: any) {
+export async function updateUser(id: number, values: any) {
     const connection = await conn.getConnection();
     try {
         await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.nameId, values.firstName, values.lastName, id, values.email, values.password]);
@@ -84,6 +91,7 @@ export async function updateUser(id: string, values: any) {
         connection.release();
     }
 }
+
 // Interactions
 router.post("/user/:id/borrow/:bookId", async (req, res) => {
     try{
