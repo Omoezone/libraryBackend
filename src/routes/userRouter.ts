@@ -70,7 +70,7 @@ router.post("/user/:id/update", async (req, res) => {
         if(userdata.user.users_data_id != paramsId) {
             res.status(401).json("You are not authorized to query for this user's borrowed books");
         }
-        req.body.user.password = await bcrypt.hash(req.body.user.password, 10);
+        
         const result: any = await updateUser(paramsId, req.body.user);
         let jwtUser = {
             "users_data_id": result.users_data_id,
@@ -92,7 +92,8 @@ router.post("/user/:id/update", async (req, res) => {
 export async function updateUser(id: number, values: any) {
     const connection = await conn.getConnection();
     try {
-        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.name_id, values.first_name, values.last_name, id, values.email, values.password]);
+        values.hash_password = await bcrypt.hash(values.password, 10);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.name_id, values.first_name, values.last_name, id, values.email, values.hash_password]);
         connection.release();
         const updatedUser = await getUser(values.email, values.password);
         return updatedUser;
