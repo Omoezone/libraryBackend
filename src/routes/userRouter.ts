@@ -69,6 +69,7 @@ router.post("/user/:id/update", async (req, res) => {
         let paramsId: number = parseInt(req.params.id);
         if(userdata.user.users_data_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
+            return "error 401";
         }
         
         const result: any = await updateUser(paramsId, req.body.user);
@@ -83,9 +84,11 @@ router.post("/user/:id/update", async (req, res) => {
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
         console.log(resultWithToken);
         res.status(200).json(resultWithToken);
+        return "customer updated";
     } catch (err) {
         console.log(err);
         res.status(500).json("Internal server error");
+        return "error 500";
     }
 });
 
@@ -100,6 +103,7 @@ export async function updateUser(id: number, values: any) {
     }catch(err){
         console.log(err)
         connection.release();
+        return "error 500";
     }
 }
 
