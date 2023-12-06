@@ -3,6 +3,7 @@ import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
 import bcrypt from "bcrypt";
 import { Book, BookInteraction, Review } from "../other_services/models/seqModels";
+import { getUser } from "./authRouter";
 import logger from "../other_services/winstonLogger";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
@@ -64,16 +65,24 @@ export async function createUser(values: any) {
 // update user data
 router.post("/user/:id/update", async (req, res) => {
     try{
-        console.log("Req body", req.body)
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        console.log("JWT", userdata)
         let paramsId: number = parseInt(req.params.id);
         if(userdata.user.users_data_id != paramsId) {
             res.status(401).json("You are not authorized to query for this user's borrowed books");
         }
         req.body.user.password = await bcrypt.hash(req.body.user.password, 10);
-        const result = await updateUser(paramsId, req.body.user);
-        res.status(200).json(result);
+        const result: any = await updateUser(paramsId, req.body.user);
+        let jwtUser = {
+            "users_data_id": result.users_data_id,
+            "name_id": result.name_id,
+            "user_id": result.user_id,
+            "email": result.email,
+            "pass": req.body.user.password,
+            "snap_timestamp": result.snap_timestamp,
+        }
+        let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
+        console.log(resultWithToken);
+        res.status(200).json(resultWithToken);
     } catch (err) {
         console.log(err);
         res.status(500).json("Internal server error");
@@ -83,9 +92,10 @@ router.post("/user/:id/update", async (req, res) => {
 export async function updateUser(id: number, values: any) {
     const connection = await conn.getConnection();
     try {
-        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.nameId, values.firstName, values.lastName, id, values.email, values.password]);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.name_id, values.first_name, values.last_name, id, values.email, values.password]);
         connection.release();
-        return "customer updated";
+        const updatedUser = await getUser(values.email, values.password);
+        return updatedUser;
     }catch(err){
         console.log(err)
         connection.release();
