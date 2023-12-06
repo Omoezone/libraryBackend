@@ -68,7 +68,7 @@ router.post("/user/:id/update", async (req, res) => {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         let paramsId: number = parseInt(req.params.id);
         if(userdata.user.users_data_id != paramsId) {
-            res.status(401).json("You are not authorized to query for this user's borrowed books");
+            res.status(401).json("You are not authorized to update this users data");
         }
         
         const result: any = await updateUser(paramsId, req.body.user);
