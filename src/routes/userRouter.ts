@@ -2,7 +2,7 @@ import express from "express";
 import { Request } from "express";
 import conn from "../db_services/mysqlConnSetup";
 import bcrypt from "bcrypt";
-import { Book, BookInteraction, Review } from "../other_services/models/seqModels";
+import { Book, BookInteraction, Review, User, UserData } from "../other_services/models/seqModels";
 import { getUser } from "./authRouter";
 import logger from "../other_services/winstonLogger";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -37,7 +37,6 @@ export async function getUserById(id: number) {
     }
 }
 
-// create user and user_data related to that user 
 // TODO fix any to user type
 router.post("/user",  async (req, res) => {
     try{
@@ -104,6 +103,43 @@ export async function updateUser(id: number, values: any) {
         console.log(err)
         connection.release();
         return "error 500";
+    }
+}
+
+// delete user
+router.post("/deleteUser/:id", async (req, res) => {
+    try{
+        const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
+        let paramsId: number = parseInt(req.params.id);
+        if(userdata.user.users_data_id != paramsId) {
+            res.status(401).json("You are not authorized to update this users data");
+            return "error 401";
+        }
+        const result = await deleteUser(paramsId);
+        res.status(200).json(result);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json("Internal server error");
+    }
+});
+
+export async function deleteUser(id: number) {
+    try {
+        const result = await User.update(
+            {
+                deleted_at: new Date(), 
+                is_deleted: true, 
+            },  
+            {
+                where: {
+                    user_id: id,
+                }
+            }
+        )
+        console.log("the result is ", result);
+        return result;
+    }catch(err){
+        console.log("error in deleting the given user: ", err)
     }
 }
 
