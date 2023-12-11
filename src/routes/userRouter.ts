@@ -70,7 +70,7 @@ router.post("/user/:id/update", async (req, res) => {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
-        
+        console.log("the user data is: ", req.body.user)
         const result: any = await updateUser(paramsId, req.body.user);
         let jwtUser = {
             "users_data_id": result.users_data_id,
@@ -106,6 +106,49 @@ export async function updateUser(id: number, values: any) {
     }
 }
 
+router.post("/user/:id/updatePassword", async (req, res) => {
+    try{
+        const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
+        let paramsId: number = parseInt(req.params.id);
+        if(userdata.user.users_data_id != paramsId) {
+            res.status(401).json("You are not authorized to update this users data");
+            return "error 401";
+        }
+        console.log("the user data is: ", req.body.user)
+        const result: any = await updateUserPassword(paramsId, req.body.user);
+        let jwtUser = {
+            "users_data_id": req.body.user.users_data_id,
+            "name_id": req.body.user.name_id,
+            "user_id": req.body.user.user_id,
+            "email": req.body.user.email,
+            "pass": req.body.user.new_password,
+            "snap_timestamp": req.body.user.snap_timestamp,
+        }
+        let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
+        console.log(resultWithToken);
+        res.status(200).send(resultWithToken);
+        return "customer updated";
+    } catch (err) {
+        console.log(err);
+        res.status(500).json("Internal server error");
+        return "error 500";
+    }
+});
+
+export async function updateUserPassword(id: number, values: any) {
+    const connection = await conn.getConnection();
+    try {
+        values.hash_password = await bcrypt.hash(values.new_password, 10);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.user.name_id, values.user.UserName.first_name, values.user.UserName.last_name, id, values.user.email, values.hash_password]);
+        connection.release();
+        console.log("the values are: ", values.user.email, values.new_password)
+        return values.hash_password;
+    }catch(err){
+        console.log(err)
+        connection.release();
+        return "error 500";
+    }
+}
 // delete user
 router.post("/deleteUser/:id", async (req, res) => {
     try{
