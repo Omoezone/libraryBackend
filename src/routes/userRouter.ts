@@ -66,7 +66,7 @@ router.post("/user/:id/update", async (req, res) => {
     try{
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         let paramsId: number = parseInt(req.params.id);
-        if(userdata.user.users_data_id != paramsId) {
+        if(userdata.user.user_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
@@ -109,8 +109,10 @@ export async function updateUser(id: number, values: any) {
 router.post("/user/:id/updatePassword", async (req, res) => {
     try{
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
+        console.log("the user data is: ", req.body.user, userdata.user.user_id)
         let paramsId: number = parseInt(req.params.id);
-        if(userdata.user.users_data_id != paramsId) {
+        console.log("the user data is: ", req.body.user, paramsId)
+        if(userdata.user.user_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
@@ -154,7 +156,7 @@ router.post("/deleteUser/:id", async (req, res) => {
     try{
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         let paramsId: number = parseInt(req.params.id);
-        if(userdata.user.users_data_id != paramsId) {
+        if(userdata.user.user_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }

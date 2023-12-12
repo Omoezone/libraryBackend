@@ -10,15 +10,20 @@ router.use(express.json());
 
 router.post("/user/:id/bookmarks", async (req, res) => {
     try {
+        console.log("Req for bookmarks", req.body)
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        if(userdata.user.users_data_id != parseInt(req.params.id)) {
+        console.log("Userdata", userdata)
+        if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's bookmarks");
+            return "You are not authorized to query for this user's bookmarks";
         }
         const result: any = await getBookmarks(parseInt(req.params.id));
         res.status(200).send(result);
+        return "Success";
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong while getting bookmarks");
+        return "Something went wrong while getting bookmarks";
     }
 });
 
@@ -42,7 +47,7 @@ async function getBookmarks(user_id: number) {
 router.post("/user/:id/borrowed", async (req, res) => {
     try {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        if(userdata.user.users_data_id != parseInt(req.params.id)) {
+        if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's borrowed books");
         }
         const result: any = await getBorrowed(parseInt(req.params.id));
@@ -73,7 +78,7 @@ async function getBorrowed(user_id: number) {
 router.post("/user/:id/hasborrowed", async (req, res) => {
     try {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        if(userdata.user.users_data_id != parseInt(req.params.id)) {
+        if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's previously borrowed books");
         }
         const result: any = await getHasBorrowed(parseInt(req.params.id));
@@ -104,7 +109,7 @@ async function getHasBorrowed(user_id: number) {
 router.post("/user/:id/favoritedAuthors", async (req, res) => {
     try {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        if(userdata.user.users_data_id != parseInt(req.params.id)) {
+        if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's favorited authors");
         }
         const result: any = await getFavoritedAuthors(parseInt(req.params.id));
@@ -134,7 +139,7 @@ async function getFavoritedAuthors(user_id: number) {
 router.post("/user/:id/reviews", async (req, res) => {
     try {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        if (userdata.user.users_data_id != parseInt(req.params.id)) {
+        if (userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's reviews");
         }
         const result: any = await getReviews(parseInt(req.params.id));
