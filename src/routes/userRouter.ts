@@ -70,8 +70,7 @@ router.post("/user/:id/update", async (req, res) => {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
-        console.log("the user data is: ", req.body.user)
-        const result: any = await updateUser(paramsId, req.body.user);
+        const result: any = await updateUser(paramsId, req.body.user.user, userdata.user.pass);
         let jwtUser = {
             "users_data_id": result.users_data_id,
             "name_id": result.name_id,
@@ -81,7 +80,6 @@ router.post("/user/:id/update", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        console.log(resultWithToken);
         res.status(200).json(resultWithToken);
         return "customer updated";
     } catch (err) {
@@ -91,13 +89,22 @@ router.post("/user/:id/update", async (req, res) => {
     }
 });
 
-export async function updateUser(id: number, values: any) {
+export async function updateUser(id: number, values: any, tokenPassword: any) {
     const connection = await conn.getConnection();
+    values.email = values.new_email ? values.new_email : values.email;
+    const passwordUnhashed = values.new_password ? values.new_password : tokenPassword;
+    values.password = await bcrypt.hash(passwordUnhashed, 10);
     try {
-        values.hash_password = await bcrypt.hash(values.password, 10);
-        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.name_id, values.first_name, values.last_name, id, values.email, values.hash_password]);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [
+            values.name_id, 
+            values.UserName.first_name, 
+            values.UserName.last_name, 
+            id, 
+            values.email, 
+            values.password
+        ]);
         connection.release();
-        const updatedUser = await getUser(values.email, values.password);
+        const updatedUser = await getUser(values.email, passwordUnhashed);
         return updatedUser;
     }catch(err){
         console.log(err)
@@ -106,51 +113,6 @@ export async function updateUser(id: number, values: any) {
     }
 }
 
-router.post("/user/:id/updatePassword", async (req, res) => {
-    try{
-        const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
-        console.log("the user data is: ", req.body.user, userdata.user.user_id)
-        let paramsId: number = parseInt(req.params.id);
-        console.log("the user data is: ", req.body.user, paramsId)
-        if(userdata.user.user_id != paramsId) {
-            res.status(401).json("You are not authorized to update this users data");
-            return "error 401";
-        }
-        console.log("the user data is: ", req.body.user)
-        const result: any = await updateUserPassword(paramsId, req.body.user);
-        let jwtUser = {
-            "users_data_id": req.body.user.users_data_id,
-            "name_id": req.body.user.name_id,
-            "user_id": req.body.user.user_id,
-            "email": req.body.user.email,
-            "pass": req.body.user.new_password,
-            "snap_timestamp": req.body.user.snap_timestamp,
-        }
-        let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        console.log(resultWithToken);
-        res.status(200).send(resultWithToken);
-        return "customer updated";
-    } catch (err) {
-        console.log(err);
-        res.status(500).json("Internal server error");
-        return "error 500";
-    }
-});
-
-export async function updateUserPassword(id: number, values: any) {
-    const connection = await conn.getConnection();
-    try {
-        values.hash_password = await bcrypt.hash(values.new_password, 10);
-        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.user.name_id, values.user.UserName.first_name, values.user.UserName.last_name, id, values.user.email, values.hash_password]);
-        connection.release();
-        console.log("the values are: ", values.user.email, values.new_password)
-        return values.hash_password;
-    }catch(err){
-        console.log(err)
-        connection.release();
-        return "error 500";
-    }
-}
 // delete user
 router.post("/deleteUser/:id", async (req, res) => {
     try{

@@ -49,6 +49,7 @@ router.post("/user/:id/borrowed", async (req, res) => {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's borrowed books");
+            return "You are not authorized to query for this user's borrowed books";
         }
         const result: any = await getBorrowed(parseInt(req.params.id));
         res.status(200).send(result);
@@ -80,6 +81,7 @@ router.post("/user/:id/hasborrowed", async (req, res) => {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's previously borrowed books");
+            return "You are not authorized to query for this user's previously borrowed books";
         }
         const result: any = await getHasBorrowed(parseInt(req.params.id));
         res.status(200).send(result);
@@ -111,6 +113,7 @@ router.post("/user/:id/favoritedAuthors", async (req, res) => {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         if(userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's favorited authors");
+            return "You are not authorized to query for this user's favorited authors";
         }
         const result: any = await getFavoritedAuthors(parseInt(req.params.id));
         res.status(200).send(result);
@@ -141,6 +144,7 @@ router.post("/user/:id/reviews", async (req, res) => {
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         if (userdata.user.user_id != parseInt(req.params.id)) {
             res.status(401).send("You are not authorized to query for this user's reviews");
+            return "You are not authorized to query for this user's reviews";
         }
         const result: any = await getReviews(parseInt(req.params.id));
         res.status(200).send(result);

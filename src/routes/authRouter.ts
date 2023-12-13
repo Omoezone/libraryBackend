@@ -67,8 +67,10 @@ router.post("/auth/verify", async (req, res) => {
 
 export async function getUser(mail: string, password: string) {
     try {
-        const user = await UserData.findOne({ 
-            where: { email: mail },
+        const user_id = await UserData.findOne({ where: { email: mail }, attributes: ["user_id"]});
+        let userId = user_id?.get("user_id")
+        let user = await UserData.findAll({ 
+            where: { user_id: userId },
             include: [
                 {
                     model: UserName,
@@ -78,12 +80,14 @@ export async function getUser(mail: string, password: string) {
             order: [["snap_timestamp", "DESC"]], 
             limit: 1,
         }); 
+        let userData = user[0].get();
+        userData.UserName = userData.UserName.dataValues;
         if (!user) {
             throw new Error("No user found with the given email");
-        } else if (!bcrypt.compareSync(password, user.pass)) {
+        } else if (!bcrypt.compareSync(password, userData.pass)) {
             throw new Error("Incorrect password");
         } else {
-            return user; // Remember to remove the password from the returned user object
+            return userData; // Remember to remove the password from the returned user object
         }
     } catch (error) {
         throw error; 
