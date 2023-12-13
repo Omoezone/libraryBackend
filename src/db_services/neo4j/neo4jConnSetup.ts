@@ -5,8 +5,8 @@ import fs from 'fs';
 dotenv.config();
 
 export const driver = neo4j.driver(
-    process.env.NEO4J_DB_HOST as string,
-    neo4j.auth.basic(process.env.NEO4J_DB_USERNAME as string, process.env.NEO4J_DB_PASSWORD as string)
+    process.env.NEO4J_DEV_DB_HOST as string,
+    neo4j.auth.basic(process.env.NEO4J_DEV_DB_USERNAME as string, process.env.NEO4J_DEV_DB_PASSWORD as string)
 );
 
 export const session = driver.session();
