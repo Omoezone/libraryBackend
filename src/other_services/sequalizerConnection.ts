@@ -3,8 +3,6 @@ import logger from "./winstonLogger";
 import { config } from '../../config';
 
 const dbConfig = config.dbConfig;
-console.log(dbConfig.mysql);
-console.log(config);
 const sequelize = new Sequelize(dbConfig.mysql.mysql_database!, dbConfig.mysql.mysql_user!, dbConfig.mysql.mysql_password!, {
     host: dbConfig.mysql.mysql_host!,
     port: Number(dbConfig.mysql.mysql_port),
