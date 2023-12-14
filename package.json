@@ -4,8 +4,8 @@
   "description": "The backend part of the fullstack course",
   "main": "app.js",
   "scripts": {
-    "dev": "npm run build && set NODE_ENV=development && node dist/src/app.js",
-    "prod": "npm run build && set NODE_ENV=production && node dist/src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run build && set NODE_ENV=development && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\"",
     "build": "tsc",
     "start": "npm run build && set NODE_ENV=production && node dist/src/app.js"
   },
@@ -27,6 +27,8 @@
     "@types/node": "^20.7.0",
     "@types/uuid": "^9.0.7",
     "cross-env": "^7.0.3",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -42,7 +44,9 @@
     "mongoose": "^7.6.3",
     "mysql2": "^3.6.1",
     "neo4j-driver": "^5.14.0",
+    "nodemon": "^3.0.2",
     "sequelize": "^6.33.0",
+    "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
     "winston": "^3.10.0"
   }
