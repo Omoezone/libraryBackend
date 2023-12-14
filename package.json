@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run build && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\"",
+    "dev": "npm run build && set NODE_ENV=development && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\""",
     "build": "tsc",
-    "start": "node dist/src/app.js"
+    "start": "npm run build && set NODE_ENV=production && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\"""
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "^20.7.0",
     "@types/uuid": "^9.0.7",
+    "cross-env": "^7.0.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {

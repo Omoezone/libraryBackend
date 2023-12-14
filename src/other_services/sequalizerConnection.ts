@@ -1,11 +1,13 @@
 import { Sequelize } from "sequelize";
-import dotenv from 'dotenv';
 import logger from "./winstonLogger";
-dotenv.config();
+import { config } from '../../config';
 
-const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USERNAME!, process.env.DB_PASSWORD!, {
-    host: 'localhost',
-    port: Number(process.env.DB_PORT) || 3306,
+const dbConfig = config.dbConfig;
+console.log(dbConfig.mysql);
+console.log(config);
+const sequelize = new Sequelize(dbConfig.mysql.mysql_database!, dbConfig.mysql.mysql_user!, dbConfig.mysql.mysql_password!, {
+    host: dbConfig.mysql.mysql_host!,
+    port: Number(dbConfig.mysql.mysql_port),
     dialect: 'mysql',
     logging: (msg) => {
         logger.verbose(`Received log message: ${msg}`);
