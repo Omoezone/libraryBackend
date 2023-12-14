@@ -46,6 +46,9 @@ sequelizeSync();
 // --- Cronjob migration for the database 
 // job.start();
 
+app.get('/', (req, res) => {
+    res.send('Library backend is up and running! SÅDAN MAND! ');
+});
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
