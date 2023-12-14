@@ -23,11 +23,12 @@ router.post("/auth/login", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        
         res.status(200).send(resultWithToken);
+        return resultWithToken;
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with user login");
+        return "Something went wrong with user login";
     }
 });
 
@@ -44,13 +45,15 @@ router.post("/auth/signup", async (req, res) => {
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
         res.status(200).send(resultWithToken);
+        return resultWithToken;
     } catch (err:any) {
         if (err.code == 409){
             res.status(409).send(err.message);
+            return err.message;
         } else {
             res.status(500).send("Something went wrong while creating user");
+            return "Something went wrong while creating user";
         }
-        console.log(err);
     }
 });
 
@@ -59,9 +62,11 @@ router.post("/auth/verify", async (req, res) => {
         let decodedUser: any = jwt.verify(req.body.authToken, "secret");
         const result: any = await getUser(decodedUser.user.email, decodedUser.user.pass);
         res.status(200).send(result);
+        return result;
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with user login");
+        return "Something went wrong with user login";
     }
 });
 
