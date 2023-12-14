@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const environment = process.env.NODE_ENV;
-console.log("ENV ", environment)
 const commonConfig = {
     current_env: environment,
 };
