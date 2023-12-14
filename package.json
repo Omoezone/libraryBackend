@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run build && set NODE_ENV=development && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\"",
     "build": "tsc",
-    "start": "npm run build && set NODE_ENV=production && node dist/src/app.js"
+    "start": "npm run build && NODE_ENV=production && node dist/src/app.js"
   },
   "repository": {
     "type": "git",
