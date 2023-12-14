@@ -66,12 +66,11 @@ router.post("/user/:id/update", async (req, res) => {
     try{
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         let paramsId: number = parseInt(req.params.id);
-        if(userdata.user.users_data_id != paramsId) {
+        if(userdata.user.user_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
-        
-        const result: any = await updateUser(paramsId, req.body.user);
+        const result: any = await updateUser(paramsId, req.body.user.user, userdata.user.pass);
         let jwtUser = {
             "users_data_id": result.users_data_id,
             "name_id": result.name_id,
@@ -81,7 +80,6 @@ router.post("/user/:id/update", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        console.log(resultWithToken);
         res.status(200).json(resultWithToken);
         return "customer updated";
     } catch (err) {
@@ -91,13 +89,22 @@ router.post("/user/:id/update", async (req, res) => {
     }
 });
 
-export async function updateUser(id: number, values: any) {
+export async function updateUser(id: number, values: any, tokenPassword: any) {
     const connection = await conn.getConnection();
+    values.email = values.new_email ? values.new_email : values.email;
+    const passwordUnhashed = values.new_password ? values.new_password : tokenPassword;
+    values.password = await bcrypt.hash(passwordUnhashed, 10);
     try {
-        values.hash_password = await bcrypt.hash(values.password, 10);
-        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [values.name_id, values.first_name, values.last_name, id, values.email, values.hash_password]);
+        await connection.query(`CALL update_user(?,?,?,?,?,?)`, [
+            values.name_id, 
+            values.UserName.first_name, 
+            values.UserName.last_name, 
+            id, 
+            values.email, 
+            values.password
+        ]);
         connection.release();
-        const updatedUser = await getUser(values.email, values.password);
+        const updatedUser = await getUser(values.email, passwordUnhashed);
         return updatedUser;
     }catch(err){
         console.log(err)
@@ -111,7 +118,7 @@ router.post("/deleteUser/:id", async (req, res) => {
     try{
         const userdata = jwt.verify(req.body.authToken, "secret") as JwtPayload;
         let paramsId: number = parseInt(req.params.id);
-        if(userdata.user.users_data_id != paramsId) {
+        if(userdata.user.user_id != paramsId) {
             res.status(401).json("You are not authorized to update this users data");
             return "error 401";
         }
