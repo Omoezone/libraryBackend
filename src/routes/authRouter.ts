@@ -70,7 +70,7 @@ export async function getUser(mail: string, password: string) {
         const user_id = await UserData.findOne({ where: { email: mail }, attributes: ["user_id"]});
         let userId = user_id?.get("user_id")
         let user = await UserData.findAll({ 
-            where: { user_id: userId },
+            where: { user_id: userId, is_deleted: 0 },
             include: [
                 {
                     model: UserName,
@@ -83,9 +83,9 @@ export async function getUser(mail: string, password: string) {
         let userData = user[0].get();
         userData.UserName = userData.UserName.dataValues;
         if (!user) {
-            throw new Error("No user found with the given email");
+            throw new Error("No user found with the given credentials");
         } else if (!bcrypt.compareSync(password, userData.pass)) {
-            throw new Error("Incorrect password");
+            throw new Error("Incorrect email or password");
         } else {
             return userData; // Remember to remove the password from the returned user object
         }

@@ -44,7 +44,9 @@
     "mongoose": "^7.6.3",
     "mysql2": "^3.6.1",
     "neo4j-driver": "^5.14.0",
+    "nodemon": "^3.0.2",
     "sequelize": "^6.33.0",
+    "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
     "winston": "^3.10.0"
   }
