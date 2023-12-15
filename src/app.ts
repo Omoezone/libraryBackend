@@ -16,9 +16,7 @@ import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
-import { config } from '../config';
 
-const dbConfig = config.dbConfig;
 dotenv.config();
 
 const app = express();
@@ -48,6 +46,9 @@ sequelizeSync();
 // --- Cronjob migration for the database 
 // job.start();
 
+app.get('/', (req, res) => {
+    res.send('Library backend is up and running! SÅDAN MAND! ');
+});
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
@@ -56,7 +57,7 @@ process.on('SIGINT', () => {
     process.exit(0); 
 });
 
-const port = dbConfig.APP_PORT;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`App is listening on ${port}`);
 });
