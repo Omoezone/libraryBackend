@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import sequelize from "../other_services/sequalizerConnection";
 import { QueryTypes } from 'sequelize';
-import { UserData, UserName } from "../other_services/models/seqModels";
+import { User, UserData, UserName } from "../other_services/models/seqModels";
 import jwt from "jsonwebtoken";
 import env from "dotenv";
 
@@ -23,17 +23,19 @@ router.post("/auth/login", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
-        
         res.status(200).send(resultWithToken);
+        return resultWithToken;
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with user login");
+        return "Something went wrong with user login";
     }
 });
 
 router.post("/auth/signup", async (req, res) => {
     try {
         const result: any = await createUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password);
+        console.log("result: ", result)
         let jwtUser = {
             "users_data_id": result.users_data_id,
             "name_id": result.name_id,
@@ -44,13 +46,15 @@ router.post("/auth/signup", async (req, res) => {
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser }, "secret"), "user": result};
         res.status(200).send(resultWithToken);
+        return resultWithToken;
     } catch (err:any) {
         if (err.code == 409){
             res.status(409).send(err.message);
+            return err.message;
         } else {
-            res.status(500).send("Something went wrong while creating user");
+            res.status(500).send("Something went wrong while creating user ");
+            return "Something went wrong while creating user (returning 500)";
         }
-        console.log(err);
     }
 });
 
@@ -59,18 +63,33 @@ router.post("/auth/verify", async (req, res) => {
         let decodedUser: any = jwt.verify(req.body.authToken, "secret");
         const result: any = await getUser(decodedUser.user.email, decodedUser.user.pass);
         res.status(200).send(result);
+        return result;
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with user login");
+        return "Something went wrong with user login (returning 401)";
     }
 });
 
 export async function getUser(mail: string, password: string) {
     try {
-        const user_id = await UserData.findOne({ where: { email: mail }, attributes: ["user_id"]});
+        const user_id = await UserData.findOne({
+            where: { email: mail },
+            attributes: ["user_id"],
+            include: [
+                {
+                model: User,
+                attributes: ["is_deleted"],
+                },
+            ],
+        });
         let userId = user_id?.get("user_id")
+        if (user_id?.get("is_deleted") == 1) {
+            throw new Error("User no longer exists");
+        }
+
         let user = await UserData.findAll({ 
-            where: { user_id: userId, is_deleted: 0 },
+            where: { user_id: userId },
             include: [
                 {
                     model: UserName,
@@ -82,14 +101,18 @@ export async function getUser(mail: string, password: string) {
         }); 
         let userData = user[0].get();
         userData.UserName = userData.UserName.dataValues;
+        console.log("userData: ", userData)
         if (!user) {
+            console.log("No user found with the given credentials")
             throw new Error("No user found with the given credentials");
         } else if (!bcrypt.compareSync(password, userData.pass)) {
+            console.log("Incorrect email or password")
             throw new Error("Incorrect email or password");
         } else {
             return userData; // Remember to remove the password from the returned user object
         }
     } catch (error) {
+        console.log("error: ", error)
         throw error; 
     }
 }
@@ -107,10 +130,12 @@ export async function createUser(first_name: string, last_name:string, email: st
             type: QueryTypes.RAW,
             model: UserData,
         });
+        console.log("created: ", result);
         let createdUser = getUser(email, password);
+        console.log("createdUser: ", createdUser)
         return createdUser;
     } catch (error) {
-        throw error; // Re-throw the error so it can be caught in the router
+        throw error;    
     }
 }
 
