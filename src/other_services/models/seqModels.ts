@@ -245,6 +245,8 @@ export class UserData extends Model {
     declare email: string;
     declare pass: string;
     declare snap_timestamp: string;
+
+    declare User?: User;
 }
     UserData.init({
         users_data_id: {
