@@ -73,7 +73,8 @@ router.post("/auth/verify", async (req, res) => {
 
 export async function getUser(mail: string, password: string) {
     try {
-        const user_id = await UserData.findOne({
+        let user, userData;
+        const user_id_data = await UserData.findOne({
             where: { email: mail },
             attributes: ["user_id"],
             include: [
@@ -83,12 +84,11 @@ export async function getUser(mail: string, password: string) {
                 },
             ],
         });
-        let userId = user_id?.get("user_id")
-        if (user_id?.get("is_deleted") == 1) {
-            throw new Error("User no longer exists");
-        }
-
-        let user = await UserData.findAll({ 
+        const userId = user_id_data?.get("user_id")
+        const isDeleted = user_id_data?.User?.dataValues?.is_deleted;
+        console.log("user_id: ", userId, isDeleted, user_id_data)
+        if (isDeleted == false) {        
+        user = await UserData.findAll({ 
             where: { user_id: userId },
             include: [
                 {
@@ -99,9 +99,13 @@ export async function getUser(mail: string, password: string) {
             order: [["snap_timestamp", "DESC"]], 
             limit: 1,
         }); 
-        let userData = user[0].get();
+        userData = user[0].get();
         userData.UserName = userData.UserName.dataValues;
         console.log("userData: ", userData)
+        } else {
+            console.log("User is deleted")
+            throw new Error("User is deleted");
+        }
         if (!user) {
             console.log("No user found with the given credentials")
             throw new Error("No user found with the given credentials");
