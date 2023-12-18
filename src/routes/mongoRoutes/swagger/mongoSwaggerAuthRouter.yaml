@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API
+  description: API for user authentication and management
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /mongo/auth/login:
+    post:
+      summary: User login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Successful login
+        '401':
+          description: Unauthorized - Something went wrong with user login
+          
+  /mongo/auth/signup:
+    post:
+      summary: User signup
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - first_name
+                - last_name
+                - email
+                - password
+      responses:
+        '200':
+          description: Successful signup
+        '409':
+          description: Conflict - Email already exists
+        '500':
+          description: Internal Server Error - Something went wrong with user signup
+
+  /mongo/auth/verify:
+    post:
+      summary: Verify user token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authToken:
+                  type: string
+              required:
+                - authToken
+      responses:
+        '200':
+          description: Successful verification
+        '401':
+          description: Unauthorized - Something went wrong with user login
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

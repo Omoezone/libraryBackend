@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Mongo API
+  description: API for managing tags and books in MongoDB
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /mongo/tagBook:
+    post:
+      summary: Add tag to book
+      tags:
+        - Tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                book_id:
+                  type: number
+                tagId:
+                  type: number
+      responses:
+        '200':
+          description: Successful operation
+
+  /mongo/tags:
+    get:
+      summary: Get all tags
+      tags:
+        - Tags
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+  /mongo/tag/create:
+    post:
+      summary: Create tag
+      tags:
+        - Tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                tag_description:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+
+  /mongo/tag/{id}:
+    get:
+      summary: Get tag by ID
+      tags:
+        - Tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+  /mongo/tag/update:
+    put:
+      summary: Update tag
+      tags:
+        - Tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                tag_description:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+
+  /mongo/tag/delete:
+    delete:
+      summary: Delete tag
+      tags:
+        - Tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+      responses:
+        '200':
+          description: Successful operation
+
+components:
+  schemas:
+    Tag:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        tag_description:
+          type: string
