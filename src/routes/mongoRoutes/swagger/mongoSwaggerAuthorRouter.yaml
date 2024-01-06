@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: Author CRUD API
+  description: CRUD operations for managing authors
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /mongo/authors:
+    get:
+      summary: Get all authors
+      tags:
+        - Authors
+      responses:
+        '200':
+          description: Successful response
+        '500':
+          description: Internal Server Error
+
+  /mongo/create/author:
+    post:
+      summary: Create a new author
+      tags:
+        - Authors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                total_books:
+                  type: integer
+              required:
+                - username
+                - total_books
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request - Missing required fields
+        '500':
+          description: Internal Server Error
+
+  /mongo/author/delete/{id}:
+    delete:
+      summary: Delete author by ID
+      tags:
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Author ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request - Author does not exist
+        '500':
+          description: Internal Server Error

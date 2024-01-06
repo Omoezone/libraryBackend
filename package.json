@@ -4,6 +4,7 @@
   "description": "The backend part of the fullstack course",
   "main": "app.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run build && set NODE_ENV=development && nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/app.ts\"",
     "build": "tsc || ./node_modules/typescript/bin/tsc",
     "start": "npm run build && NODE_ENV=production && node dist/src/app.js"
@@ -24,6 +25,8 @@
     "@types/cors": "^2.8.14",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "^20.7.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.7",
     "cross-env": "^7.0.3",
     "nodemon": "^3.0.2",
@@ -45,7 +48,8 @@
     "neo4j-driver": "^5.14.0",
     "nodemon": "^3.0.2",
     "sequelize": "^6.33.0",
-    "ts-node": "^10.9.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1",
     "winston": "^3.10.0"
   }

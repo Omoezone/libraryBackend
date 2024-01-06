@@ -3,6 +3,7 @@ import { exec } from 'child_process';
 
 const job = new CronJob(
 	'5 * * * * *',
+    
 	function () {
 	    exec(`bash ./backup.sh`, (err, stdout, stderr) => {
             if (err) {

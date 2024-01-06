@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  title: User CRUD API
+  description: CRUD operations for managing users
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /mongo/users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successful response
+  /mongo/users/{id}:
+    get:
+      summary: Get user by ID
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Successful response
+        '500':
+          description: Internal Server Error
+
+  /mongo/user/create:
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: upfile
+          type: file
+          description: The file to upload.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Successful response
+        '409':
+          description: Conflict - Email already exists
+        '500':
+          description: Internal Server Error
+
+
+  /mongo/updateUser/{id}:
+    put:
+      summary: Update user by ID
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Successful response
+        '500':
+          description: Internal Server Error
+
+  /mongo/deleteUser/{id}:
+    delete:
+      summary: Soft delete user by ID
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Successful response
+        '500':
+          description: Internal Server Error
+
+
+
+components:
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+
+    UserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+
+  parameters:
+    UserId:
+      name: id
+      in: path
+      required: true
+      description: User ID
+      schema:
+        type: string

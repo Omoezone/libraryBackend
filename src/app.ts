@@ -11,40 +11,94 @@ import tagRouter from './routes/tagRouter';
 import authRouter from './routes/authRouter';
 import userTabRouter from './routes/userTabRouter';
 import mongoBookRouter from './routes/mongoRoutes/mongoBookRouter';
+import mongoAuthorRouter from './routes/mongoRoutes/mongoAuthorRouter';
+import mongoReviewRouter from './routes/mongoRoutes/mongoReviewRouter';
+import mongoTagRouter from './routes/mongoRoutes/mongoTagRouter';
+import mongoUserRouter from './routes/mongoRoutes/mongoUserRouter';
+import mongoAuthRouter from './routes/mongoRoutes/mongoAuthRouter'
 import neo4jUserRouter from './routes/neo4jRoutes/neo4jUserRouter';
 import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
-
 dotenv.config();
 
+
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+dotenv.config();
 const app = express();
+
+//http://localhost:3000/docs/
+const options = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Library API documentation",
+            version: "1.0.0",
+            description: "code documentation for our library project",
+        },
+    },
+    apis: [
+        './src/routes/mongoRoutes/swagger/mongoSwaggerUserRouter.yaml',
+        './src/routes/mongoRoutes/swagger/mongoSwaggerAuthorRouter.yaml',
+        './src/routes/mongoRoutes/swagger/mongoSwaggerAuthRouter.yaml',
+        './src/routes/mongoRoutes/swagger/mongoSwaggerBookRouter.yaml',
+        './src/routes/mongoRoutes/swagger/mongoSwaggerTagRouter.yaml', 
+        './src/routes/mongoRoutes/swagger/mongoSwaggerReviewRouter.yaml',
+    ],
+};
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsdoc(options)));
+
+
+   //Thhese endpoints works: 
+     
+        
+        //Havent checked these endpoints yet:
 app.use(cors())
 // API routes imported from routes folder
+//mysql router
+/*
 app.use(userRouter);
 app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
+
+*/
+
+// --- mongo router ----
+/*
+app.use(mongoBookRouter)
+app.use(mongoAuthorRouter)
+app.use(mongoReviewRouter)
+app.use(mongoTagRouter)
+app.use(mongoUserRouter)
+app.use(mongoAuthRouter)
+*/
+
+// --- neo4j router ---
+=======
 app.use(userTabRouter);
 //app.use(neo4jUserRouter)
-//app.use(mongoBookRouter)
+
 
 // --- auth and sync sequelize
 sequalizeAuth();
 sequelizeSync();
 
 // --- test mongoDB connection
+
 //connectToMongoDB();
 //seedData();
 
 // --- test neo4j connection
-//console.log(getAllUsers());
-//seedDataNeo4j();
+console.log(getAllUsers());
+seedDataNeo4j();
 
 // --- Cronjob migration for the database 
-// job.start();
+//job.start();
 
 app.get('/', (req, res) => {
     res.send('Library backend is up and running! SÅDAN MAND! ');
