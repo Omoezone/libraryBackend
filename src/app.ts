@@ -9,6 +9,7 @@ import bookRouter from './routes/bookRouter';
 import authorRouter from './routes/authorRouter';
 import tagRouter from './routes/tagRouter';
 import authRouter from './routes/authRouter';
+import userTabRouter from './routes/userTabRouter';
 import mongoBookRouter from './routes/mongoRoutes/mongoBookRouter';
 import mongoAuthorRouter from './routes/mongoRoutes/mongoAuthorRouter';
 import mongoReviewRouter from './routes/mongoRoutes/mongoReviewRouter';
@@ -20,6 +21,8 @@ import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
+dotenv.config();
+
 
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -62,6 +65,7 @@ app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
+
 */
 
 // --- mongo router ----
@@ -75,6 +79,8 @@ app.use(mongoAuthRouter)
 */
 
 // --- neo4j router ---
+=======
+app.use(userTabRouter);
 //app.use(neo4jUserRouter)
 
 
@@ -94,6 +100,9 @@ seedDataNeo4j();
 // --- Cronjob migration for the database 
 //job.start();
 
+app.get('/', (req, res) => {
+    res.send('Library backend is up and running! SÅDAN MAND! ');
+});
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
@@ -102,7 +111,7 @@ process.on('SIGINT', () => {
     process.exit(0); 
 });
 
-const port = process.env.PORT ?? 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`App is listening on ${port}`);
 });

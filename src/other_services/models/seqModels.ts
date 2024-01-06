@@ -245,6 +245,8 @@ export class UserData extends Model {
     declare email: string;
     declare pass: string;
     declare snap_timestamp: string;
+
+    declare User?: User;
 }
     UserData.init({
         users_data_id: {
@@ -267,13 +269,11 @@ export class UserData extends Model {
         pass: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            validate: {
-                len: [8, 50],
-            },
         },
         snap_timestamp: {
             type: DataTypes.DATE,
             allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
     }, { 
         sequelize,
@@ -359,6 +359,36 @@ BookInteraction.init(
     }
 );
 
+export class FavoritedAuthor extends Model {
+    declare favorited_id: number;
+    declare user_id: number;
+    declare author_id: number;
+}
+FavoritedAuthor.init(
+    {
+        favorited_id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        author_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+    },
+    {
+        sequelize,
+        modelName: 'FavoritedAuthor',
+        tableName: 'favorited_authors',
+        timestamps: false,
+        createdAt: false,
+    }
+);
+
 Book.belongsTo(Author, { foreignKey: 'author_id' });
 Author.hasMany(Book, { foreignKey: 'author_id' });
 Book.hasMany(Review, { foreignKey: 'book_id' });
@@ -371,3 +401,5 @@ UserName.hasMany(UserData, {foreignKey: 'name_id'});
 BookInteraction.belongsTo(User, {foreignKey: 'user_id'});
 BookInteraction.belongsTo(Book, {foreignKey: 'book_id'});
 User.hasMany(BookInteraction, {foreignKey: 'user_id'});
+Author.hasMany(FavoritedAuthor, {foreignKey: 'author_id'});
+FavoritedAuthor.belongsTo(Author, {foreignKey: 'author_id'});

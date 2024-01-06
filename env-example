@@ -1,14 +1,14 @@
-DB_NAME = 
-DB_USERNAME = 
-DB_PASSWORD = 
-DB_HOST = 
-DB_PORT = 
+MYSQL_DEV_DB_NAME = 
+MYSQL_DEV_DB_USERNAME = 
+MYSQL_DEV_DB_PASSWORD = 
+MYSQL_DEV_DB_HOST = 
+MYSQL_DEV_DB_PORT = 
 
-MONGO_DB_NAME = 
-MONGO_DB_HOST = "mongodb://localhost:<port>"
+MONGO_DEV_DB_NAME = 
+MONGO_DEV_DB_HOST = "mongodb://localhost:<port>"
 
-NEO4J_DB_HOST = "bolt://localhost:<port>"
-NEO4J_DB_USERNAME = 
-NEO4J_DB_PASSWORD = 
+NEO4J_DEV_DB_HOST = "bolt://localhost:<port>"
+NEO4J_DEV_DB_USERNAME = 
+NEO4J_DEV_DB_PASSWORD = 
 
-PORT = 
+DEV_PORT = 
