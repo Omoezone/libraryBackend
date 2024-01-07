@@ -21,9 +21,6 @@ import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
-dotenv.config();
-
-
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 dotenv.config();
@@ -50,52 +47,40 @@ const options = {
 };
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsdoc(options)));
-
-
-   //Thhese endpoints works: 
-     
-        
-        //Havent checked these endpoints yet:
 app.use(cors())
+
 // API routes imported from routes folder
 //mysql router
-/*
 app.use(userRouter);
 app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
-
-*/
+app.use(userTabRouter);
 
 // --- mongo router ----
-/*
 app.use(mongoBookRouter)
 app.use(mongoAuthorRouter)
 app.use(mongoReviewRouter)
 app.use(mongoTagRouter)
 app.use(mongoUserRouter)
 app.use(mongoAuthRouter)
-*/
 
 // --- neo4j router ---
-=======
 app.use(userTabRouter);
-//app.use(neo4jUserRouter)
-
+app.use(neo4jUserRouter)
 
 // --- auth and sync sequelize
 sequalizeAuth();
 sequelizeSync();
 
-// --- test mongoDB connection
-
-//connectToMongoDB();
+// --- mongoDB connection
+connectToMongoDB();
 //seedData();
 
 // --- test neo4j connection
-console.log(getAllUsers());
-seedDataNeo4j();
+//console.log(getAllUsers());
+//seedDataNeo4j();
 
 // --- Cronjob migration for the database 
 //job.start();
