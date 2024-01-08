@@ -1,17 +1,13 @@
 import express from 'express';
 import logger from '../../other_services/winstonLogger';
 import Author from '../../other_services/mongoSchemas/authorSchema';
-
-
+import { checkUserRole } from './mongoAuthRouter';
 
 const router = express.Router();
 router.use(express.json());
-//TODO: 
-//add endpont: /addAuthorToBook
-//add endpont: /addFindAuthorByID 
 
 //get all authors
-router.get("/mongo/authors", async (req, res) => {
+router.get("/mongo/authors", /*checkUserRole("admin"), */ async (req, res) => {
     try {
         console.log("Getting all authors")
         const result = await getAllAuthorsMongo();

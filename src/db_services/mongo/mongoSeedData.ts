@@ -29,8 +29,8 @@ const userSeed = async (db: any) => {
                 "is_deleted": false,
                 "deleted_at": null,
                 "user_data": [{
-                    "email": "testMail1@mail.dk",
-                    "password": "Password1",
+                    "email": "testMailAdmin@mail.dk",
+                    "password": "PasswordAdmin",
                     "first_name": "William",
                     "last_name": "omoe",
                     "timestamp": Date()
@@ -45,7 +45,8 @@ const userSeed = async (db: any) => {
                     {
                         "author": new mongoose.Types.ObjectId(),
                     }
-                ]
+                ],
+                "role": "Admin"
             },
             {
                 "created_at": Date(),
@@ -78,7 +79,8 @@ const userSeed = async (db: any) => {
                     {
                         "author": new mongoose.Types.ObjectId(),
                     }
-                ]
+                ],
+                "role": "Audit"
             },
             {
                 "created_at": Date(),
@@ -119,6 +121,66 @@ const userSeed = async (db: any) => {
                 "deleted_at": null,
                 "user_data": [{
                     "email": "testMail4@mail.dk",
+                    "password": "Password4",
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
+                    "email": "testMail5@mail.dk",
+                    "password": "Password4",
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
+                    "email": "testMail6@mail.dk",
                     "password": "Password4",
                     "first_name": "John",
                     "last_name": "Doe",

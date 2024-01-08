@@ -81,8 +81,6 @@ async function getUser(email: string, password: string){
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, user.user_data[0].password);
-        console.log("Gets here to password check")
-        
         console.log("Password: " + user.user_data[0].password);
 
         if(!isPasswordCorrect){
@@ -117,5 +115,19 @@ async function createUser(first_name: string, last_name: string, email: string, 
     }
 }
 
-
+export const checkUserRole = (requiredRole: string) => {
+    return async (req: any, res: any, next: any) => {
+        try {
+            const userRole = req.user.role; 
+            if (userRole === requiredRole) {
+                next(); 
+            } else {
+                res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    };
+};
 export default router;

@@ -22,7 +22,12 @@ const userSchema = new Schema({
         {
             author: { type: Schema.Types.ObjectId, ref: 'Author' }
         }
-    ]
+    ],
+    role: {
+        type: String,
+        enum: ['Customer', 'Admin', 'Audit'],
+        default: 'Customer'
+    }
 });
 
 const User = mongoose.model('User', userSchema);
