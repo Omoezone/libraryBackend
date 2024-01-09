@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API
+  description: API for user signup and login using Neo4j
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /neo4j/signup:
+    post:
+      summary: User signup
+      tags:
+        - Neo4j Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignupRequest'
+      responses:
+        '200':
+          description: Successful response
+        '401':
+          description: Unauthorized - Something went wrong with signup
+
+  /neo4j/login:
+    post:
+      summary: User login
+      tags:
+        - Neo4j Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: Successful response
+        '401':
+          description: Unauthorized - Something went wrong with login
+
+components:
+  schemas:
+    UserSignupRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+
+    UserLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password

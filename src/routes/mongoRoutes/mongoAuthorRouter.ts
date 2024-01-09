@@ -34,12 +34,9 @@ async function getAllAuthorsMongo() {
 }
 
 
-
-
-
 //create author
 //This deos not work why ? 
-router.post("/mongo/create/author", async (req, res) => {
+router.post("/mongo/author", async (req, res) => {
     try {
         console.log("Creating author");
         const { username, total_books } = req.body;

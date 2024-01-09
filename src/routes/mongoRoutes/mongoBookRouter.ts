@@ -29,35 +29,14 @@ async function getAllBooksMongo() {
     } 
 }
 
-router.get("/mongo/books/:id", async (req, res) => {
-    try {
-        const result = await getBookByIdMongo(req.params.id);
-        res.status(200).send(result);
-    } catch (error) {
-        logger.error("Error in getting book by id: [Mongo getBookById, 1]",error);
-        res.status(500).send(error);
-    }
-});
 
-async function getBookByIdMongo(id:string) {
-    try {
-        console.log("Entering getBookByIdMongo")
-        const book = await Books.findById(id);
-        return book;
-    } catch (error) {
-        logger.error("Error in getting book by id: [Mongo getBookById, 2]",error);
-        throw error;
-    }
-}
-
-//Create book Hvorfor virker det ikke ?
-
+//Create book virker
 router.post("/mongo/book/create", async (req, res) => {
     try{
         console.log(req.body)
         const result = await createBook(req.body.title, req.body.picture, req.body.summary, req.body.pages, req.body.mount, req.body.available_amount);
         res.status(200).send(result);
-
+        console.log("Book created: ", result)
     }catch(error){
         logger.error("Error in creating book: [Mongo createBook, 1]",error);
         throw error;

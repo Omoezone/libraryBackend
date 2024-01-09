@@ -1,7 +1,10 @@
 openapi: 3.0.0
 info:
-  title: Your Book API
+  title: Book CRUD API
+  description: CRUD operations for managing books
   version: 1.0.0
+servers:
+  - url: http://localhost:3000
 paths:
   /mongo/books:
     get:
@@ -11,100 +14,47 @@ paths:
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                - title: Book 1
-                  picture: Picture URL 1
-                  summary: Summary 1
-                  pages: 100
-                  amount: 50
-                  available_amount: 10
-                - title: Book 2
-                  picture: Picture URL 2
-                  summary: Summary 2
-                  pages: 150
-                  amount: 30
-                  available_amount: 5
-    x-swagger-router-controller: YourControllerName
-    operationId: getAllBooks
-
-  /mongo/books/{id}:
-    get:
-      summary: Get a book by ID
-      tags:
-        - Books
-      parameters:
-        - name: id
-          in: path
-          description: Book ID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              example:
-                title: Book 1
-                picture: Picture URL 1
-                summary: Summary 1
-                pages: 100
-                amount: 50
-                available_amount: 10
-    x-swagger-router-controller: YourControllerName
-    operationId: getBookById
+        '500':
+          description: Internal Server Error
 
   /mongo/book/create:
     post:
       summary: Create a new book
       tags:
         - Books
-      consumes:
-        - multipart/form-data
-      parameters:
-        - in: formData
-          name: upfile
-          type: file
-          description: The file to upload.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                picture:
-                  type: string
-                summary:
-                  type: string
-                pages:
-                  type: integer
-                mount:
-                  type: integer
-                available_amount:
-                  type: integer
-              required:
-                - title
-                - picture
-                - summary
-                - pages
-                - mount
-                - available_amount
+              $ref: '#/components/schemas/BookRequest'
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                title: New Book
-                picture: Root to my picture
-                summary: This is my summary of my book
-                pages: 1212
-                amount: 50
-                available_amount: 3
-    x-swagger-router-controller: YourControllerName
-    operationId: createBook
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    BookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        picture:
+          type: string
+        summary:
+          type: string
+        pages:
+          type: integer
+        mount:
+          type: integer
+        available_amount:
+          type: integer
+      required:
+        - title
+        - picture
+        - summary
+        - pages
+        - mount
+        - available_amount
