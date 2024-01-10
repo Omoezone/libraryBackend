@@ -23,7 +23,9 @@ import job from './other_services/cronJob';
 import cors from 'cors';
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+
 dotenv.config();
+
 const app = express();
 
 //http://localhost:3000/docs/
@@ -77,8 +79,19 @@ app.use(mongoAuthRouter)
 
 /*
 // --- neo4j router ---
+
 app.use(userTabRouter);
-app.use(neo4jUserRouter)
+//app.use(neo4jUserRouter)
+
+
+// --- auth and sync sequelize
+sequalizeAuth();
+sequelizeSync();
+
+// --- test mongoDB connection
+
+connectToMongoDB();
+seedData();
 
 // --- test neo4j connection
 console.log(getAllUsers());
