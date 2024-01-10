@@ -21,12 +21,11 @@ import logger from './other_services/winstonLogger';
 import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
-dotenv.config();
-
-
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+
 dotenv.config();
+
 const app = express();
 
 //http://localhost:3000/docs/
@@ -79,7 +78,7 @@ app.use(mongoAuthRouter)
 */
 
 // --- neo4j router ---
-=======
+
 app.use(userTabRouter);
 //app.use(neo4jUserRouter)
 
@@ -90,8 +89,8 @@ sequelizeSync();
 
 // --- test mongoDB connection
 
-//connectToMongoDB();
-//seedData();
+connectToMongoDB();
+seedData();
 
 // --- test neo4j connection
 console.log(getAllUsers());
