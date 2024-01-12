@@ -49,34 +49,35 @@ const options = {
 };
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsdoc(options)));
-
-
-   //Thhese endpoints works: 
-     
-        
-        //Havent checked these endpoints yet:
 app.use(cors())
+
 // API routes imported from routes folder
+
+// --- auth and sync sequelize mysql
+//sequalizeAuth();
+//sequelizeSync();
+
 //mysql router
-/*
 app.use(userRouter);
 app.use(bookRouter);
 app.use(authorRouter);
 app.use(tagRouter);
 app.use(authRouter);
+app.use(userTabRouter);
 
-*/
+// --- mongoDB connection
+connectToMongoDB();
+//seedData();
 
 // --- mongo router ----
-/*
 app.use(mongoBookRouter)
 app.use(mongoAuthorRouter)
 app.use(mongoReviewRouter)
 app.use(mongoTagRouter)
 app.use(mongoUserRouter)
 app.use(mongoAuthRouter)
-*/
 
+/*
 // --- neo4j router ---
 
 app.use(userTabRouter);
@@ -95,6 +96,7 @@ seedData();
 // --- test neo4j connection
 console.log(getAllUsers());
 seedDataNeo4j();
+*/
 
 // --- Cronjob migration for the database 
 //job.start();
@@ -105,7 +107,7 @@ app.get('/', (req, res) => {
 // --- Do this when the server is closed
 process.on('SIGINT', () => {
     logger.end();
-    //mongoDbClient.close();
+    mongoDbClient.close();
     console.log('See u later, silly!');
     process.exit(0); 
 });

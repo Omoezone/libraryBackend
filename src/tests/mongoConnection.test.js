@@ -5,7 +5,7 @@ describe('MongoDB Connection Test', () => {
 
   beforeAll(async () => {
     // Update these parameters with your MongoDB connection details
-    const mongoUri = 'mongodb+srv://<username>:<password>@cluster0.xgywy6a.mongodb.net/?retryWrites=true&w=majority';
+    const mongoUri = 'mongodb+srv://admin:adminPass@cluster0.xgywy6a.mongodb.net/';
     const dbName = 'databaseFag';
 
     // Create a MongoDB client

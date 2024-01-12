@@ -5,6 +5,7 @@ import User from "../../other_services/mongoSchemas/userDataSchema";
 import Book from "../../other_services/mongoSchemas/bookSchema";
 import Author from "../../other_services/mongoSchemas/authorSchema";
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -29,64 +30,66 @@ const userSeed = async (db: any) => {
                 "is_deleted": false,
                 "deleted_at": null,
                 "user_data": [{
+                    "email": "testMailAdmin@mail.dk",
+                    "password": await bcrypt.hash("PasswordAdmin", 10),
+                    "first_name": "Admin",
+                    "last_name": "Account",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    }
+                ],
+                "role": "Admin"
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
+                    "email": "testMailAudit@mail.dk",
+                    "password": await bcrypt.hash("PasswordAudit", 10),
+                    "first_name": "Audit",
+                    "last_name": "Account",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    }
+                ],
+                "role": "Audit"
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
                     "email": "testMail1@mail.dk",
-                    "password": "Password1",
-                    "first_name": "William",
-                    "last_name": "omoe",
-                    "timestamp": Date()
-                }],
-                "bookInteractions": [
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    }
-                ],
-                "favoritedAuthors": [
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    }
-                ]
-            },
-            {
-                "created_at": Date(),
-                "is_deleted": false,
-                "deleted_at": null,
-                "user_data": [{
-                    "email": "testMail2@mail.dk",
-                    "password": "Password2",
-                    "first_name": "Rasmus",
-                    "last_name": "koefoed",
-                    "timestamp": Date()
-                }],
-                "bookInteractions": [
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    },
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    }
-                ],
-                "favoritedAuthors": [
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    },
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    },
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    }
-                ]
-            },
-            {
-                "created_at": Date(),
-                "is_deleted": false,
-                "deleted_at": null,
-                "user_data": [{
-                    "email": "testMail3@mail.dk",
-                    "password": "Password3",
+                    "password": await bcrypt.hash("Password1", 10),
                     "first_name": "jane",
                     "last_name": "doe",
                     "timestamp": Date()
@@ -118,8 +121,68 @@ const userSeed = async (db: any) => {
                 "is_deleted": false,
                 "deleted_at": null,
                 "user_data": [{
+                    "email": "testMail2@mail.dk",
+                    "password": await bcrypt.hash("Password2", 10),
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
+                    "email": "testMail3@mail.dk",
+                    "password": await bcrypt.hash("Password3", 10),
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "timestamp": Date()
+                }],
+                "bookInteractions": [
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Borrowed"
+                    },
+                    {
+                        "bookId": new mongoose.Types.ObjectId(),
+                        "intereactionType": "Read"
+                    }
+                ],
+                "favoritedAuthors": [
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                    {
+                        "author": new mongoose.Types.ObjectId(),
+                    },
+                ]
+            },
+            {
+                "created_at": Date(),
+                "is_deleted": false,
+                "deleted_at": null,
+                "user_data": [{
                     "email": "testMail4@mail.dk",
-                    "password": "Password4",
+                    "password": await bcrypt.hash("Password4", 10),
                     "first_name": "John",
                     "last_name": "Doe",
                     "timestamp": Date()

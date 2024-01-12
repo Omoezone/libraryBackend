@@ -29,6 +29,3 @@ const Book = mongoose.model('Book', bookSchema);
 
 export default Book;
 
-
-// remove desc for tags
-// author is a reference 
