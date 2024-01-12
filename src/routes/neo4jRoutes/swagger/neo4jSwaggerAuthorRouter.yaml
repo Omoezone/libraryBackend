@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Neo4j Library API documentation
+  version: 1.0.0
+  description: API documentation for Neo4j routes in our library project
+paths:
+  /neo4j/authors:
+    get:
+      summary: Get all authors
+      tags:
+        - Neo4j Authors
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              example:
+                - id: "12345"
+                  username: "author123"
+                  total_books: 10
+        '401':
+          description: Unauthorized - Something went wrong with getting all authors
+
+  /neo4j/create/author:
+    post:
+      summary: Create a new author
+      tags:
+        - Neo4j Authors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              username: "newAuthor"
+              totalBooks: 5
+      responses:
+        '200':
+          description: Successful creation
+          content:
+            application/json:
+              example:
+                author:
+                  id: "54321"
+                  username: "newAuthor"
+                  total_books: 5
+                authorData:
+                  id: "98765"
+                  username: "newAuthor"
+                  total_books: 5
+        '401':
+          description: Unauthorized - Something went wrong with creating author
+
+  /neo4j/update/author:
+    put:
+      summary: Update an existing author
+      tags:
+        - Neo4j Authors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              authorId: "12345"
+              username: "updatedAuthor"
+              totalBooks: 15
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              example:
+                author:
+                  id: "12345"
+                  username: "updatedAuthor"
+                  total_books: 15
+        '401':
+          description: Unauthorized - Something went wrong with updating author

@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Neo4j Authentication API
+  description: API for user signup, login, and verification using Neo4j
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /neo4j/signup:
+    post:
+      summary: User signup
+      tags:
+        - Neo4j Auth
+      operationId: signupUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignupRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                authToken: <authToken>
+                user:
+                  user_id: <user_id>
+                  created_at: <created_at>
+                  is_deleted: <is_deleted>
+                  deleted_at: <deleted_at>
+        '401':
+          description: Unauthorized - Something went wrong with signup
+
+  /neo4j/login:
+    post:
+      summary: User login
+      tags:
+        - Neo4j Auth
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                authToken: <authToken>
+                user:
+                  user_id: <user_id>
+                  created_at: <created_at>
+                  is_deleted: <is_deleted>
+                  deleted_at: <deleted_at>
+        '401':
+          description: Unauthorized - Something went wrong with login
+
+  /neo4j/verify:
+    post:
+      summary: Verify user with JWT token
+      tags:
+        - Neo4j Auth
+      operationId: verifyUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyUserRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                message: User is verified!!
+        '401':
+          description: Unauthorized - Something went wrong with user login
+
+components:
+  schemas:
+    UserLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    UserSignupRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+
+    VerifyUserRequest:
+      type: object
+      properties:
+        Authorization:
+          type: string
+      required:
+        - Authorization
