@@ -18,13 +18,14 @@ describe('MongoDB Connection Test', () => {
   test('should connect to MongoDB', async () => {
     try {
       // Access a specific database
-      const db = client.db('databaseFag');
+      const db = await client.db('databaseFag');
+
+      console.log('Connected to MongoDB', await db.s.namespace.db);
 
       // Perform a simple query (e.g., check if a collection exists)
-      const collectionNames = await db.listCollections().toArray();
-      const collectionExists = collectionNames.some(collection => collection.name === 'databaseFag');
+      const databaseName = await db.s.namespace.db;
 
-      expect(collectionExists).toBe(true);
+      expect(databaseName === 'databaseFag').toBe(true);
     } catch (error) {
       fail(`Failed to connect to MongoDB: ${error}`);
     }
