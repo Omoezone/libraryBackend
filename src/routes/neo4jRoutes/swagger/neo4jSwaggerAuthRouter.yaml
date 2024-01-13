@@ -5,68 +5,50 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3000
-
 paths:
   /neo4j/signup:
     post:
       summary: User signup
       tags:
-        - Neo4j Auth
-      operationId: signupUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserSignupRequest'
+              $ref: '#/components/schemas/Neo4jSignupRequest'
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                authToken: <authToken>
-                user:
-                  user_id: <user_id>
-                  created_at: <created_at>
-                  is_deleted: <is_deleted>
-                  deleted_at: <deleted_at>
         '401':
           description: Unauthorized - Something went wrong with signup
+      security:
+        - BearerAuth: []
 
   /neo4j/login:
     post:
       summary: User login
       tags:
-        - Neo4j Auth
-      operationId: loginUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/Neo4jLoginRequest'
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                authToken: <authToken>
-                user:
-                  user_id: <user_id>
-                  created_at: <created_at>
-                  is_deleted: <is_deleted>
-                  deleted_at: <deleted_at>
         '401':
           description: Unauthorized - Something went wrong with login
+      security:
+        - BearerAuth: []
 
   /neo4j/verify:
     post:
       summary: Verify user with JWT token
       tags:
-        - Neo4j Auth
-      operationId: verifyUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
@@ -76,16 +58,18 @@ paths:
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                message: User is verified!!
         '401':
-          description: Unauthorized - Something went wrong with user login
+          description: Unauthorized - Invalid or expired token
+      security:
+        - BearerAuth: []
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
-    UserLoginRequest:
+    Neo4jSignupRequest:
       type: object
       properties:
         email:
@@ -96,27 +80,21 @@ components:
         - email
         - password
 
-    UserSignupRequest:
+    Neo4jLoginRequest:
       type: object
       properties:
         email:
           type: string
         password:
           type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
       required:
         - email
         - password
-        - firstName
-        - lastName
 
     VerifyUserRequest:
       type: object
       properties:
-        Authorization:
+        authToken:
           type: string
       required:
-        - Authorization
+        - authToken

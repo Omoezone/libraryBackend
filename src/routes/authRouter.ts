@@ -58,16 +58,22 @@ router.post("/auth/signup", async (req, res) => {
     }
 });
 
-router.post("/auth/verify", async (req, res) => {
+router.post("/neo4j/verify", async (req, res) => {
     try {
-        let decodedUser: any = jwt.verify(req.body.authToken, "secret");
-        const result: any = await getUser(decodedUser.user.email, decodedUser.user.pass);
-        res.status(200).send(result);
-        return result;
-    } catch (err) {
-        console.log(err);
+            
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).send("Authorization token not provided");
+        }
+
+            jwt.verify(token, 'secret');
+            
+            res.status(200).json({message: "User is verified!!"});
+
+    
+    } catch (error) {
+        console.log(error);
         res.status(401).send("Something went wrong with user login");
-        return "Something went wrong with user login (returning 401)";
     }
 });
 

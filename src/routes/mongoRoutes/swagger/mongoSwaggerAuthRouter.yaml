@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: User Authentication API
-  description: API for user authentication and management
+  description: API for user signup, login, and verification using MongoDB
   version: 1.0.0
 servers:
   - url: http://localhost:3000
@@ -16,21 +16,15 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-              required:
-                - email
-                - password
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successful login
+          description: Successful response
         '401':
           description: Unauthorized - Something went wrong with user login
-          
+      security:
+        - BearerAuth: []
+
   /mongo/auth/signup:
     post:
       summary: User signup
@@ -41,32 +35,20 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                first_name:
-                  type: string
-                last_name:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-              required:
-                - first_name
-                - last_name
-                - email
-                - password
+              $ref: '#/components/schemas/SignupRequest'
       responses:
-        '200':
-          description: Successful signup
+        '201':
+          description: Successful response
         '409':
           description: Conflict - Email already exists
         '500':
           description: Internal Server Error - Something went wrong with user signup
+      security:
+        - BearerAuth: []
 
   /mongo/auth/verify:
     post:
-      summary: Verify user token
+      summary: Verify user with JWT token
       tags:
         - Authentication
       requestBody:
@@ -74,20 +56,53 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                authToken:
-                  type: string
-              required:
-                - authToken
+              $ref: '#/components/schemas/VerifyUserRequest'
       responses:
         '200':
-          description: Successful verification
+          description: Successful response
         '401':
-          description: Unauthorized - Something went wrong with user login
+          description: Unauthorized - Invalid or expired token
+      security:
+        - BearerAuth: []
 
 components:
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    SignupRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+
+    VerifyUserRequest:
+      type: object
+      properties:
+        authToken:
+          type: string
+      required:
+        - authToken
