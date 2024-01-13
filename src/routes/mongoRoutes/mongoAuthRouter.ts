@@ -57,15 +57,14 @@ router.post("/mongo/auth/signup", async (req, res) => {
 router.post("/mongo/auth/verify", async (req, res) => {
     try {
         
-        let decodedUser: any = jwt.verify(req.body.authToken, "secret");
-        const result: any = await getUser(decodedUser.userMail, decodedUser.userPassword);
-
-        if(!result){
-            throw new Error("User not found");
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).send("Authorization token not provided");
         }
-        
-        res.status(200).send(result);
-    
+
+        const decoded = jwt.verify(token, 'secret');
+        console.log("decoded user: ", decoded);
+        res.status(200).json({message: "User is verified!!"});
     } catch (error) {
         console.log(error);
         res.status(401).send("Something went wrong with user login");

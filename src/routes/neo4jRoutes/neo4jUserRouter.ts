@@ -156,4 +156,37 @@ async function updateUser(value: any) {
     }
 }
 
+router.post("/neo4j/findUser/:id", async (req, res) => {
+    try {
+        const result: any = await getUserById(req.params.id);
+        res.status(200).send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+async function getUserById(id: string) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) WHERE u.user_id = $userId RETURN u, ud`,
+            {
+                userId: id
+            }
+        );
+        const user = result.records.map((record) => {
+            return {
+                user: record.get('u').properties,
+                userData: record.get('ud').properties
+            };
+        });
+        return user;
+    } catch (error) {
+        console.error('Error getting user by id:', error);
+    } finally {
+        await session.close();
+    }
+}
+
 export default router;

@@ -88,4 +88,37 @@ async function createBook(title : string, picture : string, summary : string, pa
     }
 }
 
+router.post("/mongo/book/update/:id", async (req, res) => {
+    try{
+        const result = await updateBook(req.params.id, req.body.title, req.body.picture, req.body.summary, req.body.pages, req.body.mount, req.body.available_amount);
+        res.status(200).send(result);
+
+    }catch(error){
+        logger.error("Error in updating book: [Mongo updateBook, 1]",error);
+        throw error;
+    }
+
+});
+
+async function updateBook(id:string, title : string, picture : string, summary : string, pages : number, mount : number, available_amount : number){
+    try {
+        const updatedBook = await Books.findByIdAndUpdate(id, {
+            title: title,
+            picture: picture,
+            summary: summary,
+            pages: pages,
+            amount: mount,
+            available_amount: available_amount,
+        }, {new: true});
+        if(!updatedBook){
+            throw new Error("Book not updated");
+        }else{
+            return updatedBook;
+        }
+    } catch (error) {
+        logger.error("Error in updating a book: [Mongo update book, 1]", error);
+        throw error;
+    }
+}
+
 export default router;

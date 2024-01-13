@@ -5,14 +5,12 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3000
-
 paths:
   /neo4j/signup:
     post:
       summary: User signup
       tags:
-        - Neo4j Auth
-      operationId: signupUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
@@ -25,21 +23,22 @@ paths:
           content:
             application/json:
               example:
-                authToken: <authToken>
+                authToken: "String"
                 user:
-                  user_id: <user_id>
-                  created_at: <created_at>
-                  is_deleted: <is_deleted>
-                  deleted_at: <deleted_at>
+                  user_id: "String"
+                  created_at: "String"
+                  is_deleted: "Boolean"
+                  deleted_at: "String"
         '401':
           description: Unauthorized - Something went wrong with signup
+      x-swagger-router-controller: YourControllerName
+      operationId: signUp
 
   /neo4j/login:
     post:
       summary: User login
       tags:
-        - Neo4j Auth
-      operationId: loginUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
@@ -52,21 +51,22 @@ paths:
           content:
             application/json:
               example:
-                authToken: <authToken>
+                authToken: "String"
                 user:
-                  user_id: <user_id>
-                  created_at: <created_at>
-                  is_deleted: <is_deleted>
-                  deleted_at: <deleted_at>
+                  user_id: "String"
+                  created_at: "String"
+                  is_deleted: "Boolean"
+                  deleted_at: "String"
         '401':
           description: Unauthorized - Something went wrong with login
+      x-swagger-router-controller: YourControllerName
+      operationId: logIn
 
   /neo4j/verify:
     post:
       summary: Verify user with JWT token
       tags:
-        - Neo4j Auth
-      operationId: verifyUser
+        - Neo4j authentication
       requestBody:
         required: true
         content:
@@ -79,11 +79,19 @@ paths:
           content:
             application/json:
               example:
-                message: User is verified!!
+                message: "User is verified!!"
         '401':
-          description: Unauthorized - Something went wrong with user login
+          description: Unauthorized - Invalid or expired token
+      security:
+        - BearerAuth: []
+      x-swagger-router-controller: YourControllerName
+      operationId: verifyUser
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     UserLoginRequest:
       type: object
@@ -99,24 +107,24 @@ components:
     UserSignupRequest:
       type: object
       properties:
-        email:
-          type: string
-        password:
-          type: string
         firstName:
           type: string
         lastName:
           type: string
+        email:
+          type: string
+        password:
+          type: string
       required:
-        - email
-        - password
         - firstName
         - lastName
+        - email
+        - password
 
     VerifyUserRequest:
       type: object
       properties:
-        Authorization:
+        authToken:
           type: string
       required:
-        - Authorization
+        - authToken

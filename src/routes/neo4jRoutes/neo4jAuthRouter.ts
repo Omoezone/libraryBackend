@@ -56,15 +56,12 @@ router.post("/neo4j/verify", async (req, res) => {
         
         const token = req.header('Authorization')?.replace('Bearer ', '');
         if (!token) {
-            return res.status(401).send("Authorization token not provided");
+            throw new Error("Authorization token is not provided");
         }
 
         const decoded = jwt.verify(token, 'secret');
         console.log("decoded user: ", decoded);
-            
         res.status(200).json({message: "User is verified!!"});
-
-
 
     } catch (error) {
         console.log(error);

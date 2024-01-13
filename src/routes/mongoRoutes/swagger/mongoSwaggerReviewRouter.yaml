@@ -1,57 +1,92 @@
 openapi: 3.0.0
 info:
-  title: Review API
-  description: API for managing reviews
+  title: Book Review API
+  description: APIs related to book reviews
   version: 1.0.0
-servers:
-  - url: http://localhost:3000
+tags:
+  - name: Reviews
+    description: APIs related to book reviews
 paths:
   /mongo/reviews:
     get:
       summary: Get all reviews
-      tags:
+      tags: 
         - Reviews
       responses:
         '200':
-          description: OK
+          description: Successful response
           content:
             application/json:
               example:
-                - _id: "60a2c1d8e43a1a001cfc1db0"
+                - _id: "review_id"
                   review_data:
-                    stars: 5
-                    user_id: 123
-                    book_id: 456
-                  createdAt: "2022-05-17T10:30:00.000Z"
-                  updatedAt: "2022-05-17T10:30:00.000Z"
-        '500':
-          description: Internal Server Error
-  
+                    stars: 4
+                    user_id: "user_id"
+                    book_id: "book_id"
   /mongo/review/create:
     post:
-      summary: Create a review
-      tags:
+      summary: Create a new review
+      tags: 
         - Reviews
       requestBody:
-        required: true
         content:
           application/json:
-            example:
-              - stars: 5
-                user_id: 123
-                book_id: 456
+            schema:
+              type: object
+              properties:
+                stars:
+                  type: integer
+                user_id:
+                  type: string
+                book_id:
+                  type: string
+              required:
+                - stars
+                - user_id
+                - book_id
       responses:
         '200':
-          description: OK
+          description: Successful response
           content:
             application/json:
               example:
-                - _id: "60a2c1d8e43a1a001cfc1db0"
-                  review_data:
-                    stars: 5
-                    user_id: 123
-                    book_id: 456
-                  createdAt: "2022-05-17T10:30:00.000Z"
-                  updatedAt: "2022-05-17T10:30:00.000Z"
-        '500':
-          description: Internal Server Error
+                _id: "review_id"
+                review_data:
+                  stars: 4
+                  user_id: "user_id"
+                  book_id: "book_id"
+  /mongo/review/update:
+    post:
+      summary: Update an existing review
+      tags: 
+        - Reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                stars:
+                  type: integer
+                user_id:
+                  type: string
+                book_id:
+                  type: string
+              required:
+                - id
+                - stars
+                - user_id
+                - book_id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: "review_id"
+                review_data:
+                  stars: 4
+                  user_id: "user_id"
+                  book_id: "book_id"
