@@ -4,13 +4,10 @@ import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { create } from 'domain';
 const router = express();
 router.use(express.json());
 
-
-
-router.post("/neo4j/signup", async (req, res) => {
+router.post("/neo4j/signup", async (req: any, res: any) => {
     try{
         const result: any = await createUser(req.body);
         let jwtUser = {
@@ -31,7 +28,7 @@ router.post("/neo4j/signup", async (req, res) => {
 
 
 
-router.post("/neo4j/login", async (req, res) => {  
+router.post("/neo4j/login", async (req: any, res:any) => {  
     try {
         const result: any = await login(req.body);
         let jwtUser = {
@@ -51,7 +48,7 @@ router.post("/neo4j/login", async (req, res) => {
 
 });
 
-router.post("/neo4j/verify", async (req, res) => {
+router.post("/neo4j/verify", async (req: any, res: any) => {
     try {
         
         const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -170,6 +167,10 @@ export async function createUser(value: any) {
     }
 }
 
-
+export async function verifyRole(user: any, requiredRole: string) {
+    if (!user.roles.includes(requiredRole)) {
+        throw new Error("Unauthorized access for user role");
+    }
+};
 
 export default router;

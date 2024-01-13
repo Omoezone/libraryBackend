@@ -10,6 +10,7 @@ CREATE (u:User {
   password: 'password' + toString(x),
   first_name: "FirstName" + toString(x),
   last_name: "LastName" + toString(x),
+  role: "customer",
   snap_timestamp: timestamp()
 })
 

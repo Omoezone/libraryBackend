@@ -55,7 +55,24 @@ export async function getAllUsers() {
 }
 // Seed data for neo4j db. It comes from seedData.cypher file
 export async function seedDataNeo4j() {
+    await customersData();
+    await userRolesSeed();
+}
+
+async function customersData() {
     const cypherScript = fs.readFileSync('./src/db_services/neo4j/seedData.cypher', 'utf8');
+    const scriptSession = driver.session();
+
+    scriptSession.run(cypherScript)
+    .catch(error => {
+        console.error('Error executing Cypher script:', error);
+    }).finally(() => {
+        scriptSession.close();
+    });
+}
+
+async function userRolesSeed() {
+    const cypherScript = fs.readFileSync('./src/db_services/neo4j/userRoles.cypher', 'utf8');
     const scriptSession = driver.session();
 
     scriptSession.run(cypherScript)
