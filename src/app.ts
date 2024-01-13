@@ -18,11 +18,11 @@ import mongoUserRouter from './routes/mongoRoutes/mongoUserRouter';
 import mongoAuthRouter from './routes/mongoRoutes/mongoAuthRouter'
 import neo4jUserRouter from './routes/neo4jRoutes/neo4jUserRouter';
 import logger from './other_services/winstonLogger';
-import dotenv from 'dotenv';
 import job from './other_services/cronJob';
 import cors from 'cors';
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -66,7 +66,7 @@ app.use(authRouter);
 app.use(userTabRouter);
 
 // --- mongoDB connection
-connectToMongoDB();
+//connectToMongoDB();
 //seedData();
 
 // --- mongo router ----
@@ -101,7 +101,7 @@ seedDataNeo4j();
 // --- Cronjob migration for the database 
 //job.start();
 
-app.get('/', (req, res) => {
+app.get('/', (req: any, res: any) => {
     res.send('Library backend is up and running! SÅDAN MAND! ');
 });
 // --- Do this when the server is closed
