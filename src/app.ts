@@ -45,6 +45,14 @@ const options = {
         './src/routes/mongoRoutes/swagger/mongoSwaggerBookRouter.yaml',
         './src/routes/mongoRoutes/swagger/mongoSwaggerTagRouter.yaml', 
         './src/routes/mongoRoutes/swagger/mongoSwaggerReviewRouter.yaml',
+
+        
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerUserRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerAuthorRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerAuthRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerBookRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerTagRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerReviewRouter.yaml',
     ],
 };
 
