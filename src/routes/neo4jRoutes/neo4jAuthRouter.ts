@@ -1,9 +1,9 @@
 import express from 'express';
-import { driver } from '../../db_services/neo4j/neo4jConnSetup'
+import { driver } from '../../db_services/neo4j/neo4jConnSetup';
 import { v4 as uuid } from 'uuid';
-import logger from '../../other_services/winstonLogger';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+
 const router = express();
 router.use(express.json());
 
@@ -20,7 +20,7 @@ router.post("/neo4j/signup", async (req, res) => {
         res.status(200).json(resultWithToken);
         
     }catch(error){
-        logger.error(error);
+        console.log(error);
         res.status(401).send("Something went wrong with signup");
     }
 });
@@ -41,7 +41,7 @@ router.post("/neo4j/login", async (req, res) => {
         res.status(200).json(resultWithToken);
         
     }catch(error){
-        logger.error(error);
+        console.log(error);
         res.status(401).send("Something went wrong with login");
     }
 
@@ -90,7 +90,7 @@ async function login(value: any){
 
     }catch(error){
         console.log("Error en getting user: ", error);
-        logger.error(error);
+        console.log(error);
     }finally{
         await session.close();
     }
@@ -160,7 +160,7 @@ export async function createUser(value: any) {
 
 export async function verifyRole(user: any, requiredRoles: string[]) {
     console.log("user: ", user)
-    const isAuthorized = requiredRoles.some(role => user.role.includes(role));
+    const isAuthorized = requiredRoles.some(roles => user.role.includes(roles));
     return isAuthorized;
 };
 

@@ -1,7 +1,6 @@
 import express from "express";
 import { driver } from "../../db_services/neo4j/neo4jConnSetup";
 import { v4 as uuid } from 'uuid';
-import logger from '../../other_services/winstonLogger';
 import { verifyRole } from "./neo4jAuthRouter";
 const router = express.Router();
 
@@ -9,6 +8,9 @@ const router = express.Router();
 router.get("/neo4j/authors", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', ''); 
+        if(!token){
+            throw new Error("Authorization token is not provided");
+        }
         console.log("token: ", token)       
         if(!verifyRole(token, ["admin", "audit"])){
             res.status(401).send("Your role is not authorized to get all authors");
@@ -37,12 +39,11 @@ async function getAllAuthors() {
             console.log("Success getting all authors: ", allAuthors);
             return allAuthors;
     }catch(error){
-        logger.error(error);
+        console.log(error);
         console.log("Something went wrong with getAllAuthors");
     }finally{
         await session.close();
     }
-
 }
 
 //createAuthor virker!
@@ -51,10 +52,9 @@ router.post("/neo4j/create/author", async (req, res) => {
         const result: any = await createAuthor(req.body);
         res.status(200).send(result);
     } catch (err) {
-        logger.error(err);
+        console.log(err);
         res.status(401).send("Something went wrong with creating author");
     }
-
 });
 
 
@@ -103,8 +103,6 @@ async function createAuthor(value : any){
                 authorDataId: createdAuthorData.properties.author_data_id
             }
         );
-        
-        
         await trans.commit();
         console.log("Successfully created a author: ", createdAuthor);
         return {
@@ -112,13 +110,12 @@ async function createAuthor(value : any){
             authorData: createdAuthorData.properties
         }; 
     }catch(error){
-        logger.error(error);
+        console.log(error);
         console.log("Something went wrong with createAuthor, ", error);
     }finally{
         await session.close();
     }
 }
-
 
 //Update author virker!
 router.put("/neo4j/update/author", async (req, res) => {
@@ -127,10 +124,9 @@ router.put("/neo4j/update/author", async (req, res) => {
         res.status(200).send(result);
 
     } catch (err) {
-        logger.error(err);
+        console.log(err);
         res.status(401).send("Something went wrong with updating author");
     }
-
 });
 
 async function updateAuthor(value: any) {
@@ -158,8 +154,7 @@ async function updateAuthor(value: any) {
         console.log("Author updated: " + updatedAuthor);
         return { author: updatedAuthor.properties };
     } catch (error) {
-        logger.error(error);
-        
+        console.log(error);
         console.log("Something went wrong with updateAuthor: ", error);
     
     } finally {
