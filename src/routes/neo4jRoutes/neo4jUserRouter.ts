@@ -156,4 +156,75 @@ async function updateUser(value: any) {
     }
 }
 
+router.get("/neo4j/users/:id", async (req, res) => {
+    try {
+        const result: any = await getUserById(req.body);
+        res.status(200).send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+async function getUserById(id:string) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) WHERE u.user_id = $userId RETURN u, ud`,
+            {
+                userId: id
+            }
+        );
+        const user = result.records.map((record) => {
+            return {
+                user: record.get('u').properties,
+                userData: record.get('ud').properties
+            };
+        });
+        return user;
+    } catch (error) {
+        console.error('Error getting user by id:', error);
+    } finally {
+        await session.close();
+    }
+
+};
+
+router.put("/neo4j/deleteUser/:userId", async (req, res) => {
+    try {
+        console.log("USER ID: ", req.body)
+        const result = await deleteUser(req.body);
+        res.status(200).send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+async function deleteUser(id:string) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) 
+            WHERE u.user_id = $userId SET u.is_deleted = true, u.deleted_at = timestamp() RETURN u, ud`,
+            {
+                userId: id
+            }
+        );
+            
+        console.log("User we are trying to delete: " + result)
+        const user = result.records.map((record) => {
+            return {
+                user: record.get('u').properties,
+                userData: record.get('ud').properties
+            };
+        });
+        return user;
+    } catch (error) {
+        console.error('Error deleting user:', error);
+    } finally {
+        await session.close();
+    }
+}
+
 export default router;

@@ -189,5 +189,34 @@ const updateBook = async (value: any) => {
 
 }
 
+router.get("/neo4j/book/:bookId", async (req, res) => {
+    try{
+        const result: any = await getBookById(req.body);
+        res.status(200).send(result);
+    }catch(error){
+        logger.error(error);
+        console.log("Something went wrong with getBookById, ", error);
+    } 
+});
+async function getBookById(bookId: any) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (b:Book) WHERE b.book_id = $bookId RETURN b`,
+            {
+                bookId: bookId
+            }
+        );
+        const book = result.records[0].get("b");
+        console.log("Successfully found book: ", book.properties);
+        return book.properties;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Something went wrong with getBookById");
+    } finally {
+        await session.close();
+    }
+}
+
 
 export default router;

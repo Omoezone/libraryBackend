@@ -117,49 +117,37 @@ async function createAuthor(value : any){
     }
 }
 
-//Update author virker!
-router.put("/neo4j/update/author", async (req, res) => {
+router.delete("/neo4j/delete/author/:id", async (req, res) => {
     try {
-        const result: any = await updateAuthor(req.body);
+        const result: any = await deleteAuthor(req.body);
         res.status(200).send(result);
-
     } catch (err) {
         console.log(err);
-        res.status(401).send("Something went wrong with updating author");
+        res.status(401).send("Something went wrong with deleting author");
     }
 });
 
-async function updateAuthor(value: any) {
+async function deleteAuthor(id: string){
     const session = driver.session();
-    try {
-        const checkAuthor = await session.run(
-            `MATCH (a:Author) WHERE a.author_id = $authorId RETURN a`,
-            { authorId: value.authorId }
-        );
+    try{
+        const trans = driver.session().beginTransaction();
 
-        if (checkAuthor.records.length === 0) {
-            throw new Error(`Author with ID ${value.id} not found`);
-        }
-
-        const result = await session.run(
-            `MATCH (a:Author) WHERE a.author_id = $authorId SET a.username = $username, a.total_books = $totalBooks RETURN a`,
+        const result = await trans.run( 
+            'MATCH (a:Author) WHERE a.author_id = $authorId DETACH DELETE a',
             {
-                authorId: value.authorId,
-                username: value.username,
-                totalBooks: value.totalBooks
+                authorId: id
             }
-        );
-
-        const updatedAuthor = result.records[0].get("a");
-        console.log("Author updated: " + updatedAuthor);
-        return { author: updatedAuthor.properties };
-    } catch (error) {
+        ); 
+        const author = result.records[0].get("a");
+        return{
+            author : author.properties
+        }
+        return author;
+    }catch(error){
         console.log(error);
-        console.log("Something went wrong with updateAuthor: ", error);
-    
-    } finally {
+        console.log("Something went wrong with deleteAuthor, ", error);
+    }finally{
         await session.close();
     }
 }
-
 export default router;

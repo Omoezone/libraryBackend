@@ -1,114 +1,91 @@
-components:
-  schemas:
-    UserRequestBody:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-    UserUpdateRequestBody:
-      type: object
-      properties:
-        userId:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-    UserResponse:
-      type: object
-      properties:
-        user:
-          $ref: '#/components/schemas/User'
-        userData:
-          $ref: '#/components/schemas/UserData'
-    User:
-      type: object
-      properties:
-        user_id:
-          type: string
-        created_at:
-          type: string
-        is_deleted:
-          type: boolean
-        deleted_at:
-          type: string
-    UserData:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-        snap_timestamp:
-          type: string
-
-/neo4j/create/user:
-  post:
-    summary: Create a new user
-    tags:
-      - Neo4j Users
-    requestBody:
-      content:
-        application/json:
+openapi: 3.0.0
+info:
+  title: Neo4j User API
+  version: 1.0.0
+paths:
+  /neo4j/create/user:
+    post:
+      summary: Create a new user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: User object
+          required: true
           schema:
-            $ref: '#/components/schemas/UserRequestBody'
-    responses:
-      201:
-        description: User created successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserResponse'
-      401:
-        description: Something went wrong with user login
+            type: object
+      responses:
+        '201':
+          description: User created successfully
+        '401':
+          description: Something went wrong with user login
 
-/neo4j/users:
-  get:
-    summary: Get all users
-    tags:
-      - Neo4j Users
-    responses:
-      200:
-        description: Successful operation
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UserResponse'
-      401:
-        description: Something went wrong with user login
+  /neo4j/users:
+    get:
+      summary: Get all users
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: List of users
+        '401':
+          description: Something went wrong with user login
 
-/neo4j/update/user:
-  put:
-    summary: Update user information
-    tags:
-      - Neo4j Users
-    requestBody:
-      content:
-        application/json:
+  /neo4j/update/user:
+    put:
+      summary: Update a user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: User object
+          required: true
           schema:
-            $ref: '#/components/schemas/UserUpdateRequestBody'
-    responses:
-      200:
-        description: User updated successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserResponse'
-      401:
-        description: Something went wrong with user login
+            type: object
+      responses:
+        '200':
+          description: User updated successfully
+        '401':
+          description: Something went wrong with user login
+
+  /neo4j/users/{id}:
+    get:
+      summary: Get user by ID
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: User ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: User details retrieved successfully
+        '401':
+          description: Something went wrong with user login
+
+  /neo4j/deleteUser/{userId}:
+    put:
+      summary: Delete a user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          description: User ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Something went wrong with user login

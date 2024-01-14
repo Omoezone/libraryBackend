@@ -138,7 +138,7 @@ async function updateTag(title: string, tag_description: string){
 router.delete("/mongo/tag/delete", async (req, res) => {
     console.log("Deleting tag")
     try{
-        const result = await deleteTag(req.body.id);
+        const result = await deleteTag(req.body);
         res.status(200).send(result);
     }catch(error){
         logger.error("Error in deleting tag: [Mongo deleteTag, 1]",error);

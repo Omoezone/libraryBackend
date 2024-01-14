@@ -12,11 +12,13 @@ const job = new CronJob(
             console.log(stdout);
         })
     },
+    /*
 	function () {
         console.log('cron job stopped')
         },
 	true,
     "Europe/Copenhagen"
+    */
 );
 
 export default job;

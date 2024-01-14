@@ -169,6 +169,88 @@ async function updateTagByTitle(value: any) {
 }
 
 
+router.get('/neo4j/find/tag/id', async (req, res) => {
+    try {
+        const result: any = await findTagById(req.body);
+        res.status(200).send(result);
+    } catch (err) {
+        logger.error(err);
+        res.status(401).send('Something went wrong with finding tag by id');
+    }
+
+});
+
+async function findTagById(tagId: string) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (t:Tag) WHERE t.tag_id = $tagId RETURN t`,
+            {
+                tagId: tagId
+            }
+        );
+
+        if (result.records.length === 0) {
+            throw new Error(`Tag with id ${tagId} not found`);
+        }
+
+        const tag = result.records[0].get('t');
+
+        return tag;
+
+    } catch (error) {
+        logger.error(error);
+        console.log("Something went wrong with finding tag by id:", error);
+    } finally {
+        await session.close();
+    }
+}
+
+router.delete('/neo4j/delete/tag', async (req, res) => {
+    try {
+        const result: any = await deleteTag(req.body);
+        res.status(200).send(result);
+    } catch (err) {
+        logger.error(err);
+        res.status(401).send('Something went wrong with deleting tag');
+    }
+
+});
+
+
+async function deleteTag(value: any) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (t:Tag) WHERE t.title = $title RETURN t`,
+            {
+                title: value.title
+            }
+        );
+
+        if (result.records.length === 0) {
+            throw new Error(`Tag with title ${value.title} not found`);
+        }
+
+        const tag = result.records[0].get('t');
+
+        await session.run(
+            `MATCH (t:Tag) WHERE t.title = $title DETACH DELETE t`,
+            {
+                title: value.title
+            }
+        );
+
+        console.log("Tag deleted:", tag.properties);
+        return { tag: tag.properties };
+
+    } catch (error) {
+        logger.error(error);
+        console.log("Something went wrong with deleting tag:", error);
+    } finally {
+        await session.close();
+    }
+}
 
 
 
