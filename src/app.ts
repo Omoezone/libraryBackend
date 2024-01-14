@@ -16,12 +16,12 @@ import mongoReviewRouter from './routes/mongoRoutes/mongoReviewRouter';
 import mongoTagRouter from './routes/mongoRoutes/mongoTagRouter';
 import mongoUserRouter from './routes/mongoRoutes/mongoUserRouter';
 import mongoAuthRouter from './routes/mongoRoutes/mongoAuthRouter'
-import neo4jUserRouter from './routes/neo4jRoutes/neo4jUserRouter';
+import neo4jAuthorRouter from './routes/neo4jRoutes/neo4jAuthorRouter';
 import neo4jAuthRouter from './routes/neo4jRoutes/neo4jAuthRouter';
 import neo4jBookRouter from './routes/neo4jRoutes/neo4jBookRouter';
-import neo4jAuthorRouter from './routes/neo4jRoutes/neo4jAuthorRouter';
-import neo4jTagRouter from './routes/neo4jRoutes/neo4jTagRouter';
 import neo4jReviewRouter from './routes/neo4jRoutes/neo4jReviewRouter';
+import neo4jTagRouter from './routes/neo4jRoutes/neo4jTagRouter';
+import neo4jUserRouter from './routes/neo4jRoutes/neo4jUserRouter';
 import logger from './other_services/winstonLogger';
 import job from './other_services/cronJob';
 import cors from 'cors';
@@ -51,21 +51,24 @@ const options = {
         './src/routes/mongoRoutes/swagger/mongoSwaggerTagRouter.yaml', 
         './src/routes/mongoRoutes/swagger/mongoSwaggerReviewRouter.yaml',
 
-        './src/routes/neo4jRoutes/swagger/neo4jSwaggerUserRouter.yaml',
+        //neo4j
         './src/routes/neo4jRoutes/swagger/neo4jSwaggerAuthorRouter.yaml',
         './src/routes/neo4jRoutes/swagger/neo4jSwaggerAuthRouter.yaml',
         './src/routes/neo4jRoutes/swagger/neo4jSwaggerBookRouter.yaml',
-        './src/routes/neo4jRoutes/swagger/neo4jSwaggerTagRouter.yaml',
         './src/routes/neo4jRoutes/swagger/neo4jSwaggerReviewRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerTagRouter.yaml',
+        './src/routes/neo4jRoutes/swagger/neo4jSwaggerUserRouter.yaml',
     ],
 };
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsdoc(options)));
 app.use(cors())
 
+// API routes imported from routes folder
+
 // --- auth and sync sequelize mysql
-sequalizeAuth();
-sequelizeSync();
+//sequalizeAuth();
+//sequelizeSync();
 
 //mysql router
 app.use(userRouter);
@@ -76,7 +79,7 @@ app.use(authRouter);
 app.use(userTabRouter);
 
 // --- mongoDB connection
-connectToMongoDB();
+//connectToMongoDB();
 //seedData();
 
 // --- mongo router ----
@@ -87,16 +90,29 @@ app.use(mongoTagRouter)
 app.use(mongoUserRouter)
 app.use(mongoAuthRouter)
 
-// --- test neo4j connection
-//seedDataNeo4j();
 
 // --- neo4j router ---
-app.use(neo4jUserRouter);
+app.use(neo4jAuthorRouter);
 app.use(neo4jAuthRouter);
 app.use(neo4jBookRouter);
-app.use(neo4jAuthorRouter);
-app.use(neo4jTagRouter);
 app.use(neo4jReviewRouter);
+app.use(neo4jTagRouter);
+app.use(userTabRouter);
+app.use(neo4jUserRouter)
+
+
+// --- auth and sync sequelize
+sequalizeAuth();
+sequelizeSync();
+
+// --- test mongoDB connection
+
+connectToMongoDB();
+//seedData();
+
+// --- test neo4j connection
+//console.log(getAllUsers());
+//seedDataNeo4j()
 
 // --- Cronjob migration for the database 
 //job.start();

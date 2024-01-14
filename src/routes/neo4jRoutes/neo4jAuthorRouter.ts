@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/neo4j/authors", async (req, res) => {
     try {
         const role = req.header('Authorization')?.replace('Bearer ', '');
-        verifyRole(role, ["admin"]);
+        verifyRole(role, "admin");
         const result: any = await getAllAuthors();
         res.status(200).send(result);
     } catch (err) {

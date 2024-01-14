@@ -4,10 +4,13 @@ import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { create } from 'domain';
 const router = express();
 router.use(express.json());
 
-router.post("/neo4j/signup", async (req: any, res: any) => {
+
+
+router.post("/neo4j/signup", async (req, res) => {
     try{
         const result: any = await createUser(req.body);
         let jwtUser = {
@@ -25,7 +28,10 @@ router.post("/neo4j/signup", async (req: any, res: any) => {
     }
 });
 
-router.post("/neo4j/login", async (req: any, res:any) => {  
+
+
+
+router.post("/neo4j/login", async (req, res) => {  
     try {
         const result: any = await login(req.body);
         let jwtUser = {
@@ -34,29 +40,32 @@ router.post("/neo4j/login", async (req: any, res:any) => {
             "is_deleted": result.user.is_deleted,
             "deleted_at": result.user.deleted_at
         }
+
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser}, "secret"), "user": result};
         res.status(200).json(resultWithToken);
+        
     }catch(error){
         logger.error(error);
         res.status(401).send("Something went wrong with login");
     }
+
 });
 
-router.post("/neo4j/verify", async (req: any, res: any) => {
+router.post("/neo4j/verify", async (req, res) => {
     try {
+        
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token:", token)
         if (!token) {
-            return res.status(401).send("Authorization token not provided");
+            throw new Error("Authorization token is not provided");
         }
-    
+
         const decoded = jwt.verify(token, 'secret');
         console.log("decoded user: ", decoded);
         res.status(200).json({message: "User is verified!!"});
 
     } catch (error) {
         console.log(error);
-        res.status(401).send("Something went wrong with user verification");
+        res.status(401).send("Something went wrong with user login");
     }
 });
 
@@ -124,15 +133,13 @@ export async function createUser(value: any) {
                 password: $password,
                 first_name: $firstName,
                 last_name: $lastName,
-                role: $role,
                 snap_timestamp: timestamp()
             }) RETURN ud`,
             {
                 email: value.email,
                 password: bcrypt.hashSync(value.password, 10),
                 firstName: value.firstName,
-                lastName: value.lastName,
-                role: "customer"
+                lastName: value.lastName
             }
         );
     
@@ -144,6 +151,7 @@ export async function createUser(value: any) {
             {
                 userId: createdUser.properties.user_id,
                 email: createdUserData.properties.email, 
+               
             }
         );
         await trans.commit();
@@ -159,12 +167,11 @@ export async function createUser(value: any) {
     }
 }
 
-export async function verifyRole(user: any, requiredRoles: string[]) {
-    
-    const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
-    if (!hasRequiredRole) {
+
+export async function verifyRole(user: any, requiredRole: string) {
+    if (!user.roles.includes(requiredRole)) {
         throw new Error("Unauthorized access for user role");
     }
-}
+};
 
 export default router;
