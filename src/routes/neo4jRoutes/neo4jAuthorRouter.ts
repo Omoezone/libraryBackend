@@ -1,20 +1,22 @@
 import express from "express";
 import { driver } from "../../db_services/neo4j/neo4jConnSetup";
 import { v4 as uuid } from 'uuid';
-import logger from "../../other_services/winstonLogger";
+import logger from '../../other_services/winstonLogger';
 import { verifyRole } from "./neo4jAuthRouter";
-import { getUser } from "../authRouter";
 const router = express.Router();
 
 //getAllAuthors virker
 router.get("/neo4j/authors", async (req, res) => {
     try {
-        const role = req.header('Authorization')?.replace('Bearer ', '');
-        verifyRole(role, "admin");
+        const token = req.header('Authorization')?.replace('Bearer ', ''); 
+        console.log("token: ", token)       
+        if(!verifyRole(token, ["admin", "audit"])){
+            res.status(401).send("Your role is not authorized to get all authors");
+        };
         const result: any = await getAllAuthors();
         res.status(200).send(result);
     } catch (err) {
-        logger.error(err);
+        console.log(err);
         res.status(401).send("Something went wrong with getting all authors");
     }
 });
@@ -164,9 +166,5 @@ async function updateAuthor(value: any) {
         await session.close();
     }
 }
-
-
-
-
 
 export default router;

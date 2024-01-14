@@ -4,11 +4,8 @@ import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { create } from 'domain';
 const router = express();
 router.use(express.json());
-
-
 
 router.post("/neo4j/signup", async (req, res) => {
     try{
@@ -28,17 +25,16 @@ router.post("/neo4j/signup", async (req, res) => {
     }
 });
 
-
-
-
 router.post("/neo4j/login", async (req, res) => {  
     try {
         const result: any = await login(req.body);
+        console.log("result: ", result);
         let jwtUser = {
             "user_id": result.user.user_id,
             "created_at": result.user.created_at,
             "is_deleted": result.user.is_deleted,
-            "deleted_at": result.user.deleted_at
+            "deleted_at": result.user.deleted_at,
+            "role": result.userData.role
         }
 
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser}, "secret"), "user": result};
@@ -53,8 +49,8 @@ router.post("/neo4j/login", async (req, res) => {
 
 router.post("/neo4j/verify", async (req, res) => {
     try {
-        
         const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
         if (!token) {
             throw new Error("Authorization token is not provided");
         }
@@ -68,9 +64,6 @@ router.post("/neo4j/verify", async (req, res) => {
         res.status(401).send("Something went wrong with user login");
     }
 });
-
-
-
 
 async function login(value: any){
     const session = driver.session();
@@ -90,7 +83,6 @@ async function login(value: any){
         if(!isPasswordCorrect){
             throw new Error("Password is incorrect");
         }
-        
         return {
             user: userNode.properties,
             userData: userDataNode.properties
@@ -145,7 +137,6 @@ export async function createUser(value: any) {
     
         const createdUserData = userDataResult.records[0].get('ud');
 
-        
         await trans.run(
             'MATCH (u:User), (ud:UserData) WHERE u.user_id = $userId AND ud.email = $email CREATE (u)-[:HAS_USER_DATA]->(ud)',
             {
@@ -167,11 +158,10 @@ export async function createUser(value: any) {
     }
 }
 
-
-export async function verifyRole(user: any, requiredRole: string) {
-    if (!user.roles.includes(requiredRole)) {
-        throw new Error("Unauthorized access for user role");
-    }
+export async function verifyRole(user: any, requiredRoles: string[]) {
+    console.log("user: ", user)
+    const isAuthorized = requiredRoles.some(role => user.role.includes(role));
+    return isAuthorized;
 };
 
 export default router;
