@@ -3,6 +3,7 @@ import env from "dotenv";
 import bcrypt from "bcrypt";
 import { driver } from "../../db_services/neo4j/neo4jConnSetup";
 import { v4 as uuid } from 'uuid';
+import { verifyRole } from "./neo4jAuthRouter";
 
 
 env.config();
@@ -10,22 +11,17 @@ env.config();
 const router = express.Router();
 router.use(express.json());
 
-// Create user
-//Json object for create user
-/*
-{
-    "firstName": "testFirstName",
-    "lastName": "testLastName",
-    "email": "testEmail",
-    "password": "testPassword"
-}
-*/
 router.post("/neo4j/create/user", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await createUser(req.body);
         res.status(200).send(result);
@@ -99,9 +95,14 @@ export async function createUser(value: any) {
 router.get("/neo4j/users", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await getAllUsers();
         res.status(200).send(result);
@@ -146,9 +147,14 @@ export async function getAllUsers() {
 router.put("/neo4j/update/user", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await updateUser(req.body);
         res.status(200).send(result);
@@ -191,21 +197,19 @@ async function updateUser(value: any) {
     }
 }
 
-//json obj for getOneUser
-/*
-{
-    "userId": "testUserId"
-}
-*/
 router.get("/neo4j/OneUser", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await getUserById(req.body);
-        console.log("User found: ", result)
         res.status(200).json(result)
     } catch (err) {
         console.log(err);
@@ -237,21 +241,18 @@ async function getUserById(id: any) {
 
 };
 
-
-//json obj for deleteUser
-/*
-{
-    "userId": "testUserId"
-}
-*/
 router.delete("/neo4j/deleteUser", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
-        console.log("USER ID: ", req.body)
         const result = await deleteUser(req.body);
         res.status(200).send(result);
     } catch (err) {

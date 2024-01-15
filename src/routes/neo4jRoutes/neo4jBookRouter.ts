@@ -2,6 +2,7 @@ import express from 'express';
 import { driver } from '../../db_services/neo4j/neo4jConnSetup'
 import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
+import { verifyRole } from './neo4jAuthRouter';
 
 
 const router = express.Router();
@@ -10,9 +11,14 @@ router.use(express.json());
 router.get('/neo4j/books', async (req, res) => {  
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await readAllBooks();
         res.status(200).send(result);
@@ -51,25 +57,18 @@ async function readAllBooks() {
     }
 }
 
-//Create book json object 
-/*
-{
-    "title": "testBook",
-    "picture": "testPicture",
-    "summary": "testSummary",
-    "pages": 0,
-    "amount": 0,
-    "available_amount": 0
-}
-*/
-
 //createBook virker!
 router.post('/neo4j/create/book', async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await createBook(req.body);
         res.status(200).send(result);
@@ -78,7 +77,6 @@ router.post('/neo4j/create/book', async (req, res) => {
         res.status(401).send('Something went wrong with creating book');
     }
 });
-
 
 async function createBook(value: any) {
     const session = driver.session();
@@ -107,8 +105,6 @@ async function createBook(value: any) {
             }
         );
         const createdBook = createBook.records[0].get("b"); 
-        //console.log("Book created: " + createdBook)
-        
 
         //create book data
         const bookData = await trans.run(
@@ -132,7 +128,6 @@ async function createBook(value: any) {
             }
         );
         const createdBookData = bookData.records[0].get("bd");
-        //console.log("BookData created: " + createdBookData)
 
         //create relationship between Book and BookData
         await trans.run(
@@ -157,25 +152,17 @@ async function createBook(value: any) {
     }
 }
 
-
-//Json object for updateBook
-/*
-{
-    "bookId": "bookId",
-    "title": "testBook",
-    "picture": "testPicture",
-    "summary": "testSummary",
-    "pages": 0,
-    "amount": 0,
-    "available_amount": 0
-}
-*/
 router.put("/neo4j/update/book", async (req, res) => {
     try{
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await updateBook(req.body);
         res.status(200).send(result);
@@ -229,19 +216,17 @@ const updateBook = async (value: any) => {
 
 }
 
-//json object for getBookById
-/*
-{
-    "bookId": "bookId"
-}
-*/
-
 router.get("/neo4j/oneBook", async (req, res) => {
     try{
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await getBookById(req.body);
         res.status(200).send(result);

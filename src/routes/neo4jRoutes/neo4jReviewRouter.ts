@@ -2,6 +2,7 @@ import express from 'express';
 import { driver } from '../../db_services/neo4j/neo4jConnSetup'
 import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
+import { verifyRole } from './neo4jAuthRouter';
 const router = express();
 router.use(express.json());
 
@@ -10,9 +11,14 @@ router.use(express.json());
 router.get('/neo4j/reviews', async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await readAllReviews();
         res.status(200).send(result);
@@ -45,22 +51,17 @@ async function readAllReviews(){
     }
 }
 
-
-//Create review virker!
-
-//json object for create review
-/*
-{
-    "stars": 0
-}
-
-*/
 router.post('/neo4j/create/review', async (req, res) => {
     try{
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "customer"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await createReview(req.body);
         res.status(200).send(result);
@@ -89,7 +90,6 @@ async function createReview(value: any) {
         );
 
         const review = createReview.records[0].get("r").properties;
-        //console.log("Successfully created review: ", review);
 
         // Create review data
         const reviewData = await trans.run(
@@ -103,7 +103,6 @@ async function createReview(value: any) {
             }
         );
         const createdReviewData = reviewData.records[0].get("rd").properties;
-        //console.log("Successfully created review data: ", createdReviewData);
 
         // Create relationship between review and review data
         await trans.commit()
@@ -120,8 +119,5 @@ async function createReview(value: any) {
         await session.close();
     }
 }
-
-
-
 
 export default router;
