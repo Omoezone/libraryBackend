@@ -19,6 +19,7 @@ const job = new CronJob(
 	true,
     "Europe/Copenhagen"
     */
+   
 );
 
 export default job;
