@@ -138,7 +138,6 @@ router.get('/neo4j/Onetag', async (req, res) => {
         }
         const result: any = await oneTag(req.body);
         res.status(200).send(result);
-        
     } catch (err) {
         logger.error(err);
         res.status(401).send('Something went wrong with finding tag by id');
