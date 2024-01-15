@@ -36,17 +36,6 @@ const userSeed = async (db: any) => {
                     "last_name": "Account",
                     "timestamp": Date()
                 }],
-                "bookInteractions": [
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    }
-                ],
-                "favoritedAuthors": [
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    }
-                ],
                 "role": "Admin"
             },
             {
@@ -60,27 +49,6 @@ const userSeed = async (db: any) => {
                     "last_name": "Account",
                     "timestamp": Date()
                 }],
-                "bookInteractions": [
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    },
-                    {
-                        "bookId": new mongoose.Types.ObjectId(),
-                        "intereactionType": "Borrowed"
-                    }
-                ],
-                "favoritedAuthors": [
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    },
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    },
-                    {
-                        "author": new mongoose.Types.ObjectId(),
-                    }
-                ],
                 "role": "Audit"
             },
             {
