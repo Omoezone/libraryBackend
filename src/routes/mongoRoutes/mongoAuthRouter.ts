@@ -10,7 +10,7 @@ const router = express.Router();
 router.post("/mongo/auth/login", async (req, res) => {
     try {
         const result: any = await getUser(req.body.email, req.body.password);
-
+        
         let jwtUser = {
             "users_data_id": result.users_data_id,
             "name_id": result.name_id,
@@ -20,8 +20,8 @@ router.post("/mongo/auth/login", async (req, res) => {
             "snap_timestamp": result.snap_timestamp,
         }
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser}, "secret"), "user": result};
-
         res.status(200).send(resultWithToken);
+
     } catch (error) {
         console.log(error);
         res.status(401).send("Something went wrong with user login");

@@ -1,77 +1,67 @@
 openapi: 3.0.0
 info:
-  title: Neo4j Library API documentation
+  title: Your API Title
   version: 1.0.0
-  description: API documentation for Neo4j routes in our library project
+  description: Your API description
 paths:
   /neo4j/authors:
     get:
       summary: Get all authors
       tags:
-        - Neo4j Authors
+        - Neo4j authors
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              example:
-                - id: "12345"
-                  username: "author123"
-                  total_books: 10
-        '401':
-          description: Unauthorized - Something went wrong with getting all authors
-
+          description: Successful response
+      security:
+        - BearerAuth: []
   /neo4j/create/author:
     post:
       summary: Create a new author
       tags:
-        - Neo4j Authors
+        - Neo4j authors
       requestBody:
-        required: true
         content:
           application/json:
-            example:
-              username: "newAuthor"
-              totalBooks: 5
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                totalBooks:
+                  type: integer
+              required:
+                - username
+                - totalBooks
       responses:
         '200':
-          description: Successful creation
-          content:
-            application/json:
-              example:
-                author:
-                  id: "54321"
-                  username: "newAuthor"
-                  total_books: 5
-                authorData:
-                  id: "98765"
-                  username: "newAuthor"
-                  total_books: 5
-        '401':
-          description: Unauthorized - Something went wrong with creating author
-
-  /neo4j/update/author:
-    put:
-      summary: Update an existing author
+          description: Successful response
+      security:
+        - BearerAuth: []
+  /neo4j/delete/author:
+    delete:
+      summary: Delete an author by username
       tags:
-        - Neo4j Authors
+        - Neo4j authors
       requestBody:
-        required: true
         content:
           application/json:
-            example:
-              authorId: "12345"
-              username: "updatedAuthor"
-              totalBooks: 15
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+                - username
       responses:
         '200':
-          description: Successful update
-          content:
-            application/json:
-              example:
-                author:
-                  id: "12345"
-                  username: "updatedAuthor"
-                  total_books: 15
-        '401':
-          description: Unauthorized - Something went wrong with updating author
+          description: Successful response
+      security:
+        - BearerAuth: []
+tags:
+  - name: authors
+    description: Operations related to authors
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

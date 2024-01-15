@@ -11,10 +11,24 @@ const router = express.Router();
 router.use(express.json());
 
 // Create user
+//Json object for create user
+/*
+{
+    "firstName": "testFirstName",
+    "lastName": "testLastName",
+    "email": "testEmail",
+    "password": "testPassword"
+}
+*/
 router.post("/neo4j/create/user", async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await createUser(req.body);
-        res.status(201).send(result);
+        res.status(200).send(result);
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with user login");
@@ -84,6 +98,11 @@ export async function createUser(value: any) {
 // Get all users
 router.get("/neo4j/users", async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await getAllUsers();
         res.status(200).send(result);
     } catch (err) {
@@ -113,8 +132,24 @@ export async function getAllUsers() {
     }
 }
 
+
+//json obj for update user 
+/*
+{
+    "userId": "testUserId",
+    "firstName": "testFirstName",
+    "lastName": "testLastName",
+    "email": "testEmail",
+    "password": "testPassword"
+}
+*/
 router.put("/neo4j/update/user", async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await updateUser(req.body);
         res.status(200).send(result);
     } catch (err) {
@@ -152,6 +187,102 @@ async function updateUser(value: any) {
     }catch(error){
         console.error('Error updating user:', error);
     }finally{
+        await session.close();
+    }
+}
+
+//json obj for getOneUser
+/*
+{
+    "userId": "testUserId"
+}
+*/
+router.get("/neo4j/OneUser", async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
+        const result: any = await getUserById(req.body);
+        console.log("User found: ", result)
+        res.status(200).json(result)
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+async function getUserById(id: any) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) WHERE u.user_id = $userId RETURN u, ud`,
+            {
+                userId: id.userId
+            }
+        );
+        const user = result.records.map((record) => {
+            return {
+                user: record.get('u').properties.user_id,
+                userData: record.get('ud').properties.email
+            };
+        });
+        return user;
+    } catch (error) {
+        console.error('Error getting user by id:', error);
+    } finally {
+        await session.close();
+    }
+
+};
+
+
+//json obj for deleteUser
+/*
+{
+    "userId": "testUserId"
+}
+*/
+router.delete("/neo4j/deleteUser", async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
+        console.log("USER ID: ", req.body)
+        const result = await deleteUser(req.body);
+        res.status(200).send(result);
+    } catch (err) {
+        console.log(err);
+        res.status(401).send("Something went wrong with user login");
+    }
+});
+
+
+async function deleteUser(id: any) {
+    const session = driver.session();
+    try {
+        const result = await session.run(
+            `MATCH (u:User)-[:HAS_USER_DATA]->(ud:UserData) 
+            WHERE u.user_id = $userId SET u.is_deleted = true, u.deleted_at = timestamp() RETURN u, ud`,
+            {
+                userId: id.userId
+            }
+        );
+            
+        console.log("User we are trying to delete: " + result)
+        const user = result.records.map((record) => {
+            return {
+                user: record.get('u').properties.user_id,
+                userData: record.get('ud').properties.email
+            };
+        });
+        return user;
+    } catch (error) {
+        console.error('Error deleting user:', error);
+    } finally {
         await session.close();
     }
 }

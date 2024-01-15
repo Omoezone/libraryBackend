@@ -67,8 +67,35 @@ async function createReviewMongo(stars: number, user_id: number, book_id: number
     }
 }
 
+router.post("/mongo/review/update", async (req, res) => {
+    console.log("Updating review")
+    try{
+        const result = await updateReview(req.body.id, req.body.stars, req.body.user_id, req.body.book_id);
+        res.status(200).send(result);
+    }catch(error){
+        logger.error("Error in updating review: [Mongo updateReview, 2]",error);
+        throw error;
+    }
+});
 
 
+async function updateReview(id:string, stars: number, user_id: number, book_id: number) {
+    try{
+        const newReview = await review.findByIdAndUpdate(id, {
+            review_data: {
+                stars: stars,
+                user_id: user_id,
+                book_id: book_id,
+            },
+        });
+
+        return newReview;
+
+    }catch(error){
+        logger.error("Error in updating review: [Mongo updateReview, 1]",error);
+        throw error;
+    }
+}
 
 
 export default router;

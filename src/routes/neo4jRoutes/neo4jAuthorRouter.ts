@@ -2,26 +2,37 @@ import express from "express";
 import { driver } from "../../db_services/neo4j/neo4jConnSetup";
 import { v4 as uuid } from 'uuid';
 import { verifyRole } from "./neo4jAuthRouter";
+
 const router = express.Router();
 
-//getAllAuthors virker
+
 router.get("/neo4j/authors", async (req, res) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', ''); 
-        if(!token){
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
             throw new Error("Authorization token is not provided");
         }
-        console.log("token: ", token)       
-        if(!verifyRole(token, ["admin", "audit"])){
+
+        /*
+        // Check user role
+        //Token indeholder ikke en role, sørg for dette!
+        if (!verifyRole(token, ["admin", "audit"])) {
             res.status(401).send("Your role is not authorized to get all authors");
-        };
+            return;
+        }
+        */
+
         const result: any = await getAllAuthors();
         res.status(200).send(result);
+        
+
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with getting all authors");
     }
 });
+
 
 async function getAllAuthors() {
     const session = driver.session();
@@ -49,6 +60,11 @@ async function getAllAuthors() {
 //createAuthor virker!
 router.post("/neo4j/create/author", async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await createAuthor(req.body);
         res.status(200).send(result);
     } catch (err) {
@@ -57,7 +73,13 @@ router.post("/neo4j/create/author", async (req, res) => {
     }
 });
 
-
+//Create author json object:
+/*
+{
+    "username": "testAuthor",
+    "totalBooks": 0
+}
+*/
 async function createAuthor(value : any){
     const session = driver.session();
     try{
@@ -117,49 +139,58 @@ async function createAuthor(value : any){
     }
 }
 
-//Update author virker!
-router.put("/neo4j/update/author", async (req, res) => {
+router.delete("/neo4j/delete/author", async (req, res) => {
     try {
-        const result: any = await updateAuthor(req.body);
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
+        console.log("Object: ", req.body)
+        const result: any = await deleteAuthorByUserName(req.body);
+        
         res.status(200).send(result);
-
     } catch (err) {
         console.log(err);
-        res.status(401).send("Something went wrong with updating author");
+        res.status(401).send("Something went wrong with deleting author");
     }
 });
-
-async function updateAuthor(value: any) {
+async function deleteAuthorByUserName(name: any) {
     const session = driver.session();
     try {
-        const checkAuthor = await session.run(
-            `MATCH (a:Author) WHERE a.author_id = $authorId RETURN a`,
-            { authorId: value.authorId }
-        );
 
-        if (checkAuthor.records.length === 0) {
-            throw new Error(`Author with ID ${value.id} not found`);
-        }
-
-        const result = await session.run(
-            `MATCH (a:Author) WHERE a.author_id = $authorId SET a.username = $username, a.total_books = $totalBooks RETURN a`,
+        //Tjek if author exists: 
+        const author = await session.run(
+            `MATCH (a:Author) WHERE a.username = $username RETURN a`,
             {
-                authorId: value.authorId,
-                username: value.username,
-                totalBooks: value.totalBooks
+                username: name.username
             }
         );
 
-        const updatedAuthor = result.records[0].get("a");
-        console.log("Author updated: " + updatedAuthor);
-        return { author: updatedAuthor.properties };
+        if (author.records.length == 0) {
+            throw new Error(`Author with name ${name.username} not found`)
+        }
+
+        const deleteAuhor = author.records[0].get("a");
+
+        await session.run(
+            `MATCH (a:Author) WHERE a.username = $username DETACH DELETE a`,
+            {
+                username: name
+            }
+        );
+
+        console.log("Author deleted: " + deleteAuhor)
+        return { author: deleteAuhor.properties };
+
+
     } catch (error) {
-        console.log(error);
-        console.log("Something went wrong with updateAuthor: ", error);
-    
+      console.log(error);
+      console.log("Something went wrong with deleteAuthorByName, ", error);
     } finally {
-        await session.close();
+      await session.close();
     }
-}
+  }
+  
 
 export default router;

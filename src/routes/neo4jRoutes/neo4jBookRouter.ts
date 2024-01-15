@@ -9,6 +9,11 @@ router.use(express.json());
 
 router.get('/neo4j/books', async (req, res) => {  
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await readAllBooks();
         res.status(200).send(result);
     } catch (err) {
@@ -46,9 +51,26 @@ async function readAllBooks() {
     }
 }
 
+//Create book json object 
+/*
+{
+    "title": "testBook",
+    "picture": "testPicture",
+    "summary": "testSummary",
+    "pages": 0,
+    "amount": 0,
+    "available_amount": 0
+}
+*/
+
 //createBook virker!
 router.post('/neo4j/create/book', async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await createBook(req.body);
         res.status(200).send(result);
     } catch (err) {
@@ -135,8 +157,26 @@ async function createBook(value: any) {
     }
 }
 
+
+//Json object for updateBook
+/*
+{
+    "bookId": "bookId",
+    "title": "testBook",
+    "picture": "testPicture",
+    "summary": "testSummary",
+    "pages": 0,
+    "amount": 0,
+    "available_amount": 0
+}
+*/
 router.put("/neo4j/update/book", async (req, res) => {
     try{
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await updateBook(req.body);
         res.status(200).send(result);
     }catch(error){
@@ -187,6 +227,53 @@ const updateBook = async (value: any) => {
         await session.close();
     }
 
+}
+
+//json object for getBookById
+/*
+{
+    "bookId": "bookId"
+}
+*/
+
+router.get("/neo4j/oneBook", async (req, res) => {
+    try{
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
+        const result: any = await getBookById(req.body);
+        res.status(200).send(result);
+    }catch(error){
+        logger.error(error);
+        console.log("Something went wrong with getBookById, ", error);
+    } 
+});
+async function getBookById(bookId: any) {
+    const session = driver.session();
+    try {
+        
+        const result = await session.run(
+            `MATCH (b:Book) WHERE b.book_id = $bookId RETURN b`,
+            {
+                bookId: bookId.bookId
+            }
+        );
+
+        if(result.records.length === 0){
+            throw new Error("Book does not exist");
+        }
+
+        const book = result.records[0].get("b");
+        console.log("Successfully found book: ", book.properties);
+        return book.properties;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Something went wrong with getBookById");
+    } finally {
+        await session.close();
+    }
 }
 
 

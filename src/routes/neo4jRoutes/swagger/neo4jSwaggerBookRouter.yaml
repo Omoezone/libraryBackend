@@ -1,101 +1,107 @@
 openapi: 3.0.0
 info:
-  title: Neo4j Library API documentation
+  title: Your API Title
   version: 1.0.0
-  description: API documentation for Neo4j book routes in our library project
+  description: Your API description
 paths:
   /neo4j/books:
     get:
       summary: Get all books
       tags:
-        - neo4j Books
+        - Neo4j books
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              example:
-                - id: "12345"
-                  title: "Book Title"
-                  picture: "book_picture_url"
-                  summary: "Book summary"
-                  pages: 300
-                  amount: 10
-                  available_amount: 5
-        '401':
-          description: Unauthorized - Something went wrong with getting all books
-
+          description: Successful response
+      security:
+        - BearerAuth: []
   /neo4j/create/book:
     post:
       summary: Create a new book
       tags:
-        - neo4j Books
+        - Neo4j books
       requestBody:
-        required: true
         content:
           application/json:
-            example:
-              title: "New Book"
-              picture: "new_book_picture_url"
-              summary: "New book summary"
-              pages: 200
-              amount: 5
-              available_amount: 5
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                picture:
+                  type: string
+                summary:
+                  type: string
+                pages:
+                  type: integer
+                amount:
+                  type: integer
+                available_amount:
+                  type: integer
+              required:
+                - title
+                - picture
+                - summary
+                - pages
+                - amount
+                - available_amount
       responses:
         '200':
-          description: Successful creation
-          content:
-            application/json:
-              example:
-                book:
-                  id: "54321"
-                  title: "New Book"
-                  picture: "new_book_picture_url"
-                  summary: "New book summary"
-                  pages: 200
-                  amount: 5
-                  available_amount: 5
-                bookData:
-                  id: "98765"
-                  title: "New Book"
-                  picture: "new_book_picture_url"
-                  summary: "New book summary"
-                  pages: 200
-                  amount: 5
-                  available_amount: 5
-        '401':
-          description: Unauthorized - Something went wrong with creating book
-
+          description: Successful response
+      security:
+        - BearerAuth: []
   /neo4j/update/book:
     put:
-      summary: Update an existing book
+      summary: Update a book
       tags:
-        - neo4j Books
+        - Neo4j books
       requestBody:
-        required: true
         content:
           application/json:
-            example:
-              bookId: "12345"
-              title: "Updated Book"
-              picture: "updated_book_picture_url"
-              summary: "Updated book summary"
-              pages: 250
-              amount: 8
-              available_amount: 8
+            schema:
+              type: object
+              properties:
+                bookId:
+                  type: string
+                title:
+                  type: string
+                picture:
+                  type: string
+                summary:
+                  type: string
+                pages:
+                  type: integer
+                amount:
+                  type: integer
+                available_amount:
+                  type: integer
+              required:
+                - bookId
       responses:
         '200':
-          description: Successful update
-          content:
-            application/json:
-              example:
-                book:
-                  id: "12345"
-                  title: "Updated Book"
-                  picture: "updated_book_picture_url"
-                  summary: "Updated book summary"
-                  pages: 250
-                  amount: 8
-                  available_amount: 8
-        '401':
-          description: Unauthorized - Something went wrong with updating book
+          description: Successful response
+      security:
+        - BearerAuth: []
+  /neo4j/oneBook:
+    get:
+      summary: Get a book by ID
+      tags:
+        - Neo4j books
+      parameters:
+        - name: bookId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+      security:
+        - BearerAuth: []
+tags:
+  - name: books
+    description: Operations related to books
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

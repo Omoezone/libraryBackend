@@ -9,6 +9,11 @@ router.use(express.json());
 //Get all reviews works
 router.get('/neo4j/reviews', async (req, res) => {
     try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await readAllReviews();
         res.status(200).send(result);
     } catch (err) {
@@ -26,6 +31,7 @@ async function readAllReviews(){
 
         const allReviews = result.records.map((record:any) => {
             return {
+                id: record.get("r").properties.review_id,
                 stars: record.get("r").properties.stars,
             };
             }); 
@@ -41,8 +47,21 @@ async function readAllReviews(){
 
 
 //Create review virker!
+
+//json object for create review
+/*
+{
+    "stars": 0
+}
+
+*/
 router.post('/neo4j/create/review', async (req, res) => {
     try{
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        console.log("token: ", token)
+        if (!token) {
+            throw new Error("Authorization token is not provided");
+        }
         const result: any = await createReview(req.body);
         res.status(200).send(result);
     }catch(error){
@@ -102,57 +121,6 @@ async function createReview(value: any) {
     }
 }
 
-router.put("/neo4j/update/review", async (req, res) => {
-    try{
-        const result: any = await updateReview(req.body);
-        res.status(200).send(result);
-    }catch(error){
-        logger.error(error);
-        res.status(401).send('Something went wrong with updating a review');
-    }
-});
-
-
-//update review virker!
-async function updateReview(value: any) {
-    const session = driver.session();
-
-    try{
-        const trans = await session.beginTransaction();
-
-        const checkReview = await trans.run(
-            `MATCH (r:Review) WHERE r.review_id = $reviewId RETURN r`,
-            {
-                reviewId: value.reviewId
-            }
-        );
-        
-
-        if(checkReview.records.length === 0){
-            throw new Error("Review does not exist");
-        }
-
-        const result = await trans.run(
-            `MATCH (r:Review) WHERE r.review_id = $reviewId SET r.stars = $stars RETURN r`,
-            {
-                reviewId: value.reviewId,
-                stars: value.stars
-            }
-        );  
-        
-        const updatedReview = result.records[0].get("r").properties;
-        console.log("Successfully updated review: ", updatedReview.properties);
-
-        return updatedReview;
-
-    }catch(error){
-        logger.error(error);
-        console.log("Something went wrong with updateReview");
-    }finally{
-       await session.close();
-    }
-
-};
 
 
 

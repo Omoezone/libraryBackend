@@ -1,82 +1,82 @@
 openapi: 3.0.0
 info:
-  title: Tag CRUD API
-  description: CRUD operations for managing tags in Neo4j
+  title: Your API Title
   version: 1.0.0
-servers:
-  - url: http://localhost:3000
+  description: Your API description
 paths:
   /neo4j/tags:
     get:
       summary: Get all tags
       tags:
-        - Neo4j Tags
+        - neo4j tags
       responses:
         '200':
           description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with getting all tags
-
-  /neo4j/create/tag:
+      security:
+        - BearerAuth: []
     post:
       summary: Create a new tag
       tags:
-        - Neo4j Tags
+        - neo4j tags
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TagRequest'
+              type: object
+              properties:
+                title:
+                  type: string
+                tag_description:
+                  type: string
+              required:
+                - title
+                - tag_description
       responses:
         '200':
           description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with creating tag
-
-  /neo4j/update/tag:
-    put:
-      summary: Update a tag
+      security:
+        - BearerAuth: []
+  /neo4j/Onetag:
+    get:
+      summary: Get a single tag by tag description
       tags:
-        - Neo4j Tags
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TagUpdateRequest'
+        - neo4j tags
+      parameters:
+        - in: query
+          name: tag_description
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with updating tag
-
+      security:
+        - BearerAuth: []
+  /neo4j/delete/tag:
+    delete:
+      summary: Delete a tag by title
+      tags:
+        - neo4j tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+              required:
+                - title
+      responses:
+        '200':
+          description: Successful response
+      security:
+        - BearerAuth: []
+tags:
+  - name: neo4j tags
+    description: Operations related to Neo4j tags
 components:
-  schemas:
-    TagRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        tag_description:
-          type: string
-        total_books:
-          type: integer
-      required:
-        - title
-        - tag_description
-        - total_books
-
-    TagUpdateRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        newTitle:
-          type: string
-        newDescription:
-          type: string
-      required:
-        - title
-        - newTitle
-        - newDescription
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

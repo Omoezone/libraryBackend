@@ -76,7 +76,7 @@ async function createUser(first_name: string, last_name: string, email: string, 
 
 router.get("/mongo/users/:id", async (req, res) => {
     try {
-        const result = await getUserByIdMongo(req.params.id);
+        const result = await getUserByIdMongo(req.body);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error in getting user by id: [Mongo getUserById, 1]",error);
@@ -96,7 +96,7 @@ async function getUserByIdMongo(id:string) {
 
 router.put("/mongo/deleteUser/:id", async (req, res) => {
     try {
-        const result = await deleteUserMongo(req.params.id);
+        const result = await deleteUserMongo(req.body);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error in deleting user: [Mongo deleteUser, 1]",error);
@@ -126,7 +126,7 @@ async function deleteUserMongo(id:string) {
 
 router.put("/mongo/updateUser/:id", async (req, res) => {
     try {
-        const result = await updateUserMongo(req.params.id, req.body);
+        const result = await updateUserMongo(req.body, req.body);
         res.status(200).send(result);
     } catch (error) {
         logger.error("Error in updating user: [Mongo updateUser, 1]",error);
@@ -160,6 +160,28 @@ async function updateUserMongo(id:string, body:any) {
         logger.error("Error in updating user: [Mongo updateUser, 2]", error);
     }
 }
+
+router.get("/mongo/users/:id", async (req, res) => {
+    try {
+        const result = await getUserById(req.body);
+        res.status(200).send(result);
+    } catch (error) {
+        logger.error("Error in getting user by id: [Mongo getUserById, 1]",error);
+        res.status(500).send(error);
+    }
+});
+
+
+async function getUserById(id: String){
+    try {
+        const user = await User.findById(id);
+        return user;
+    } catch (error) {
+        logger.error("Error in getting user by id: [Mongo getUserById, 2]",error);
+        throw error;
+    }
+}
+
 
 
 export default router;
