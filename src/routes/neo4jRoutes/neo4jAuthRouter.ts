@@ -30,12 +30,13 @@ router.post("/neo4j/login", async (req, res) => {
         const result: any = await login(req.body);
         console.log("result: ", result);
         let jwtUser = {
-            "user_id": result.user.user_id,
-            "created_at": result.user.created_at,
-            "is_deleted": result.user.is_deleted,
-            "deleted_at": result.user.deleted_at,
-            "role": result.userData.role
+            "user_id": result.user.user_id
         }
+  
+    
+        const authToken = jwt.sign({ user: jwtUser}, "secret");
+        res.setHeader('Authorization', `Bearer ${authToken}`); 
+         
 
         let resultWithToken = {"authToken": jwt.sign({ user: jwtUser}, "secret"), "user": result};
         res.status(200).json(resultWithToken);

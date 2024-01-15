@@ -1,78 +1,94 @@
 openapi: 3.0.0
 info:
-  title: Neo4j Authentication API
-  description: API for user signup, login, and verification using Neo4j
+  title: Your API Title
   version: 1.0.0
-servers:
-  - url: http://localhost:3000
+  description: Your API description
 paths:
   /neo4j/signup:
     post:
-      summary: User signup
+      summary: User Signup
       tags:
-        - Neo4j authentication
+        - Neo4j Authentication
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserSignupRequest'
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               example:
-                authToken: "String"
-                user:
-                  user_id: "String"
-                  created_at: "String"
-                  is_deleted: "Boolean"
-                  deleted_at: "String"
-        '401':
-          description: Unauthorized - Something went wrong with signup
-      x-swagger-router-controller: YourControllerName
-      operationId: signUp
-
+                authToken: "your_auth_token"
+                user: 
+                  user_id: "user_id"
+                  created_at: "timestamp"
+                  is_deleted: false
+                  deleted_at: null
+      security:
+        - BearerAuth: []
   /neo4j/login:
     post:
-      summary: User login
+      summary: User Login
       tags:
-        - Neo4j authentication
+        - Neo4j Authentication
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               example:
-                authToken: "String"
-                user:
-                  user_id: "String"
-                  created_at: "String"
-                  is_deleted: "Boolean"
-                  deleted_at: "String"
-        '401':
-          description: Unauthorized - Something went wrong with login
-      x-swagger-router-controller: YourControllerName
-      operationId: logIn
-
+                authToken: "your_auth_token"
+                user: 
+                  user_id: "user_id"
+                  created_at: "timestamp"
+                  is_deleted: false
+                  deleted_at: null
+      security:
+        - BearerAuth: []
   /neo4j/verify:
     post:
-      summary: Verify user with JWT token
+      summary: Verify User
       tags:
-        - Neo4j authentication
+        - Neo4j Authentication
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyUserRequest'
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+                - token
       responses:
         '200':
           description: Successful response
@@ -80,51 +96,13 @@ paths:
             application/json:
               example:
                 message: "User is verified!!"
-        '401':
-          description: Unauthorized - Invalid or expired token
       security:
         - BearerAuth: []
-      x-swagger-router-controller: YourControllerName
-      operationId: verifyUser
-
+tags:
+  - name: Neo4j Authentication
+    description: Operations related to Neo4j user authentication
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
-  schemas:
-    UserLoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-      required:
-        - email
-        - password
-
-    UserSignupRequest:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-      required:
-        - firstName
-        - lastName
-        - email
-        - password
-
-    VerifyUserRequest:
-      type: object
-      properties:
-        authToken:
-          type: string
-      required:
-        - authToken

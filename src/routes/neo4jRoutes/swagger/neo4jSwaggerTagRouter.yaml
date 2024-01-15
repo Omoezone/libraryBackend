@@ -1,123 +1,82 @@
 openapi: 3.0.0
 info:
-  title: Neo4j Tag API
+  title: Your API Title
   version: 1.0.0
+  description: Your API description
 paths:
-  /api/neo4j/tags:
+  /neo4j/tags:
     get:
+      summary: Get all tags
       tags:
-        - Neo4j Tag
-      summary: Get all tags from Neo4j
+        - neo4j tags
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                - id: tag_id_here
-                  title: TagTitle
-                  tag_description: TagDescription
-        '401':
-          description: Unauthorized or Something went wrong
-
-  /api/neo4j/create/tag:
+      security:
+        - BearerAuth: []
     post:
+      summary: Create a new tag
       tags:
-        - Neo4j Tag
-      summary: Create a new tag in Neo4j
+        - neo4j tags
       requestBody:
-        description: Tag data
-        required: true
         content:
           application/json:
-            example:
-              title: TagTitle
-              tag_description: TagDescription
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                tag_description:
+                  type: string
+              required:
+                - title
+                - tag_description
       responses:
         '200':
-          description: Tag created successfully
-          content:
-            application/json:
-              example:
-                tag: {}
-                tagData: {}
-                tagDataRelationship: {}
-        '401':
-          description: Unauthorized or Something went wrong
-
-  /api/neo4j/update/tag:
-    put:
-      tags:
-        - Neo4j Tag
-      summary: Update a tag in Neo4j
-      requestBody:
-        description: Tag data
-        required: true
-        content:
-          application/json:
-            example:
-              title: ExistingTagTitle
-              newTitle: UpdatedTagTitle
-              newDescription: UpdatedTagDescription
-      responses:
-        '200':
-          description: Tag updated successfully
-          content:
-            application/json:
-              example:
-                tag: {}
-        '401':
-          description: Unauthorized or Something went wrong
-
-  /api/neo4j/find/tag/id:
+          description: Successful response
+      security:
+        - BearerAuth: []
+  /neo4j/Onetag:
     get:
+      summary: Get a single tag by tag description
       tags:
-        - Neo4j Tag
-      summary: Find a tag by ID from Neo4j
+        - neo4j tags
       parameters:
-        - name: tagId
-          in: query
-          required: true
-          description: Tag ID
+        - in: query
+          name: tag_description
           schema:
             type: string
+          required: true
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              example:
-                id: tag_id_here
-                title: TagTitle
-                tag_description: TagDescription
-        '401':
-          description: Unauthorized or Something went wrong
-
-  /api/neo4j/delete/tag:
+      security:
+        - BearerAuth: []
+  /neo4j/delete/tag:
     delete:
+      summary: Delete a tag by title
       tags:
-        - Neo4j Tag
-      summary: Delete a tag in Neo4j
+        - neo4j tags
       requestBody:
-        description: Tag data
-        required: true
         content:
           application/json:
-            example:
-              title: TagTitleToDelete
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+              required:
+                - title
       responses:
         '200':
-          description: Tag deleted successfully
-          content:
-            application/json:
-              example:
-                tag: {}
-        '401':
-          description: Unauthorized or Something went wrong
-
+          description: Successful response
+      security:
+        - BearerAuth: []
+tags:
+  - name: neo4j tags
+    description: Operations related to Neo4j tags
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT

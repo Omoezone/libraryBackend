@@ -1,73 +1,44 @@
 openapi: 3.0.0
 info:
-  title: Review CRUD API
-  description: CRUD operations for managing reviews in Neo4j
+  title: Your API Title
   version: 1.0.0
-servers:
-  - url: http://localhost:3000
+  description: Your API description
 paths:
   /neo4j/reviews:
     get:
       summary: Get all reviews
       tags:
-        - Neo4j Reviews
+        - Neo4j review
       responses:
         '200':
           description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with getting all reviews
-
+      security:
+        - BearerAuth: []
   /neo4j/create/review:
     post:
       summary: Create a new review
       tags:
-        - Neo4j Reviews
+        - Neo4j review
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReviewRequest'
+              type: object
+              properties:
+                stars:
+                  type: integer
+              required:
+                - stars
       responses:
         '200':
           description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with creating a review
-
-  /neo4j/update/review:
-    put:
-      summary: Update a review
-      tags:
-        - Neo4j Reviews
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReviewUpdateRequest'
-      responses:
-        '200':
-          description: Successful response
-        '401':
-          description: Unauthorized - Something went wrong with updating a review
-
+      security:
+        - BearerAuth: []
+tags:
+  - name: Neo4j review
+    description: Operations related to Neo4j reviews
 components:
-  schemas:
-    ReviewRequest:
-      type: object
-      properties:
-        stars:
-          type: integer
-      required:
-        - stars
-
-    ReviewUpdateRequest:
-      type: object
-      properties:
-        reviewId:
-          type: string
-        stars:
-          type: integer
-      required:
-        - reviewId
-        - stars
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
