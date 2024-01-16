@@ -98,9 +98,7 @@ paths:
                 message: "User is verified!!"
       security:
         - BearerAuth: []
-tags:
-  - name: Neo4j Authentication
-    description: Operations related to Neo4j user authentication
+
 components:
   securitySchemes:
     BearerAuth:

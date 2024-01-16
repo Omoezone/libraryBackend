@@ -72,9 +72,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: neo4j tags
-    description: Operations related to Neo4j tags
+
 components:
   securitySchemes:
     BearerAuth:
