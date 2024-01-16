@@ -65,8 +65,8 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsdoc(options)));
 app.use(cors())
 
 // --- auth and sync sequelize mysql
-//sequalizeAuth();
-//sequelizeSync();
+sequalizeAuth();
+sequelizeSync();
 
 //mysql router
 app.use(userRouter);

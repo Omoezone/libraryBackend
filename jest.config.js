@@ -1,5 +1,5 @@
 // jest.config.js
-module.exports = {
+exports.default = {
     testEnvironment: 'node',
     transform: {
       '^.+\\.js$': 'babel-jest',
