@@ -34,9 +34,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: Neo4j review
-    description: Operations related to Neo4j reviews
+
 components:
   securitySchemes:
     BearerAuth:

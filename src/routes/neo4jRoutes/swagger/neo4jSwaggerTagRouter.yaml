@@ -8,7 +8,7 @@ paths:
     get:
       summary: Get all tags
       tags:
-        - neo4j tags
+        - Neo4j tags
       responses:
         '200':
           description: Successful response
@@ -17,7 +17,7 @@ paths:
     post:
       summary: Create a new tag
       tags:
-        - neo4j tags
+        - Neo4j tags
       requestBody:
         content:
           application/json:
@@ -40,7 +40,7 @@ paths:
     get:
       summary: Get a single tag by tag description
       tags:
-        - neo4j tags
+        - Neo4j tags
       parameters:
         - in: query
           name: tag_description
@@ -56,7 +56,7 @@ paths:
     delete:
       summary: Delete a tag by title
       tags:
-        - neo4j tags
+        - Neo4j tags
       requestBody:
         content:
           application/json:
@@ -72,9 +72,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: neo4j tags
-    description: Operations related to Neo4j tags
+        
 components:
   securitySchemes:
     BearerAuth:

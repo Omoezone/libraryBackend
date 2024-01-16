@@ -97,9 +97,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: books
-    description: Operations related to books
+
 components:
   securitySchemes:
     BearerAuth:

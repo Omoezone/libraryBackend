@@ -31,8 +31,6 @@ async function getAllAuthorsMongo() {
 
 
 
-
-
 //create author
 //This deos not work why ? 
 router.post("/mongo/create/author", async (req, res) => {
