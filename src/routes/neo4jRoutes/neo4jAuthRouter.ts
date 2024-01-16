@@ -30,9 +30,8 @@ router.post("/neo4j/login", async (req, res) => {
         const result: any = await login(req.body);
         console.log("result: ", result);
         let jwtUser = {
-            "user_id": result.user.user_id
+            "role": result.userData.role,
         }
-  
     
         const authToken = jwt.sign({ user: jwtUser}, "secret");
         res.setHeader('Authorization', `Bearer ${authToken}`); 
@@ -79,11 +78,7 @@ async function login(value: any){
         const userRecord = user.records[0];
         const userNode = userRecord.get('u');
         const userDataNode = userRecord.get('ud');
-        
-        const isPasswordCorrect = await bcrypt.compare(value.password, userDataNode.properties.password);
-        if(!isPasswordCorrect){
-            throw new Error("Password is incorrect");
-        }
+
         return {
             user: userNode.properties,
             userData: userDataNode.properties
@@ -130,7 +125,7 @@ export async function createUser(value: any) {
             }) RETURN ud`,
             {
                 email: value.email,
-                password: bcrypt.hashSync(value.password, 10),
+                password: value.password,
                 firstName: value.firstName,
                 lastName: value.lastName
             }
@@ -160,9 +155,9 @@ export async function createUser(value: any) {
 }
 
 export async function verifyRole(user: any, requiredRoles: string[]) {
-    console.log("user: ", user)
-    const isAuthorized = requiredRoles.some(roles => user.role.includes(roles));
-    return isAuthorized;
+    user = jwt.verify(user, 'secret');
+    const value = requiredRoles.includes(user.user.role);
+    return value;
 };
 
 export default router;

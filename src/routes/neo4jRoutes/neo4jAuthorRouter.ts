@@ -9,24 +9,18 @@ const router = express.Router();
 router.get("/neo4j/authors", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
-        }
-
-        /*
-        // Check user role
-        //Token indeholder ikke en role, sørg for dette!
-        if (!verifyRole(token, ["admin", "audit"])) {
-            res.status(401).send("Your role is not authorized to get all authors");
+            res.status(401).send("Authorization token is not provided");
             return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
-        */
-
         const result: any = await getAllAuthors();
         res.status(200).send(result);
         
-
     } catch (err) {
         console.log(err);
         res.status(401).send("Something went wrong with getting all authors");
@@ -61,9 +55,14 @@ async function getAllAuthors() {
 router.post("/neo4j/create/author", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await createAuthor(req.body);
         res.status(200).send(result);
@@ -73,13 +72,6 @@ router.post("/neo4j/create/author", async (req, res) => {
     }
 });
 
-//Create author json object:
-/*
-{
-    "username": "testAuthor",
-    "totalBooks": 0
-}
-*/
 async function createAuthor(value : any){
     const session = driver.session();
     try{
@@ -142,13 +134,16 @@ async function createAuthor(value : any){
 router.delete("/neo4j/delete/author", async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
-        console.log("Object: ", req.body)
         const result: any = await deleteAuthorByUserName(req.body);
-        
         res.status(200).send(result);
     } catch (err) {
         console.log(err);

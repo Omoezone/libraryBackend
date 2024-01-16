@@ -1,8 +1,7 @@
 import express from 'express';
 import { driver } from '../../db_services/neo4j/neo4jConnSetup'
-import { v4 as uuid } from 'uuid';
 import logger from '../../other_services/winstonLogger';
-
+import { verifyRole } from './neo4jAuthRouter';
 
 const router = express.Router();
 router.use(express.json());
@@ -13,12 +12,18 @@ router.get('/neo4j/tags', async (req, res) => {
         const token = req.header('Authorization')?.replace('Bearer ', '');
         console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await getAllTags();
         res.status(200).send(result);
     } catch (err) {
-        logger.error(err);
+        console.log(err);
         res.status(401).send('Something went wrong with getting all tags');
     }
 });
@@ -51,13 +56,15 @@ async function getAllTags() {
 router.post('/neo4j/create/tag', async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
-
-        console.log("Data: ", req.body)
-
         const result: any = await createTag(req.body);
         res.status(200).send(result);
     } catch (err) {
@@ -132,9 +139,14 @@ async function createTag(value: any) {
 router.get('/neo4j/Onetag', async (req, res) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin", "audit"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await oneTag(req.body);
         res.status(200).send(result);
@@ -175,11 +187,15 @@ async function oneTag(tag_desrip: any){
 
 router.delete('/neo4j/delete/tag', async (req, res) => {
     try {
-
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log("token: ", token)
         if (!token) {
-            throw new Error("Authorization token is not provided");
+            res.status(401).send("Authorization token is not provided");
+            return;
+        }else{
+            if(!(await verifyRole(token, ["admin"]))){
+                res.status(401).send("No access for your role");
+                return;
+            }
         }
         const result: any = await deleteTag(req.body);
         res.status(200).send(result);
