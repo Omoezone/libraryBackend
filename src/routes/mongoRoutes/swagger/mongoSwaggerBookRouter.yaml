@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
   title: Book API
-  version: 1.0.0
+  version: 1.0.0 
 paths:
   /mongo/books:
     get:
       tags:
-        - Book
+        - Mongo Book
       summary: Get all books
       responses:
         '200':
@@ -17,7 +17,7 @@ paths:
   /mongo/books/{id}:
     get:
       tags:
-        - Book
+        - Mongo Book
       summary: Get book by ID
       parameters:
         - name: id
@@ -37,7 +37,7 @@ paths:
   /mongo/book/create:
     post:
       tags:
-        - Book
+        - Mongo Book
       summary: Create a new book
       requestBody:
         description: Book data
@@ -62,7 +62,7 @@ paths:
   /mongo/book/update/{id}:
     post:
       tags:
-        - Book
+        - Mongo Book
       summary: Update book by ID
       parameters:
         - name: id

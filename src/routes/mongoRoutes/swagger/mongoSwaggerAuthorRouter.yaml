@@ -10,7 +10,7 @@ paths:
     get:
       summary: Get all authors
       tags:
-        - Authors
+        - Mongo Authors
       responses:
         '200':
           description: Successful response
@@ -21,7 +21,7 @@ paths:
     post:
       summary: Create a new author
       tags:
-        - Authors
+        - Mongo Authors
       requestBody:
         required: true
         content:
@@ -48,7 +48,7 @@ paths:
     delete:
       summary: Delete author by ID
       tags:
-        - Authors
+        - Mongo Authors
       parameters:
         - name: id
           in: path

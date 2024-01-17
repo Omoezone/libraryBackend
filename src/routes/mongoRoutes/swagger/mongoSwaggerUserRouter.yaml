@@ -6,7 +6,7 @@ paths:
   /mongo/users:
     get:
       tags:
-        - User
+        - Mongo User
       summary: Get all users
       responses:
         '200':
@@ -17,7 +17,7 @@ paths:
   /mongo/user/create:
     post:
       tags:
-        - User
+        - Mongo User
       summary: Create a new user
       requestBody:
         description: User data
@@ -42,7 +42,7 @@ paths:
   /mongo/users/{id}:
     get:
       tags:
-        - User
+        - Mongo User
       summary: Get user by ID
       parameters:
         - name: id
@@ -61,7 +61,7 @@ paths:
           description: Internal Server Error
     put:
       tags:
-        - User
+        - Mongo User
       summary: Update user by ID
       parameters:
         - name: id
@@ -88,7 +88,7 @@ paths:
           description: Internal Server Error
     delete:
       tags:
-        - User
+        - Mongo User
       summary: Delete user by ID
       parameters:
         - name: id

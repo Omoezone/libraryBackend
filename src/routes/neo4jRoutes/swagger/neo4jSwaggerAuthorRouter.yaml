@@ -57,9 +57,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: authors
-    description: Operations related to authors
+
 components:
   securitySchemes:
     BearerAuth:

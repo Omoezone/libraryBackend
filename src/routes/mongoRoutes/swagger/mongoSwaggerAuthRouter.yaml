@@ -10,7 +10,7 @@ paths:
     post:
       summary: User login
       tags:
-        - Authentication
+        - Mongo Authentication
       requestBody:
         required: true
         content:
@@ -29,7 +29,7 @@ paths:
     post:
       summary: User signup
       tags:
-        - Authentication
+        - Mongo Authentication
       requestBody:
         required: true
         content:
@@ -50,7 +50,7 @@ paths:
     post:
       summary: Verify user with JWT token
       tags:
-        - Authentication
+        - Mongo Authentication
       requestBody:
         required: true
         content:

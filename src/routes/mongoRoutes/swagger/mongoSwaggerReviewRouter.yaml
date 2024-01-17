@@ -6,7 +6,7 @@ paths:
   /mongo/reviews:
     get:
       tags:
-        - Review
+        - Mongo Review
       summary: Get all reviews
       responses:
         '200':
@@ -19,7 +19,7 @@ paths:
   /mongo/review/create:
     post:
       tags:
-        - Review
+        - Mongo Review
       summary: Create a new review
       requestBody:
         description: Review data
@@ -41,7 +41,7 @@ paths:
   /mongo/review/update:
     post:
       tags:
-        - Review
+        - Mongo Review
       summary: Update review
       requestBody:
         description: Updated review data

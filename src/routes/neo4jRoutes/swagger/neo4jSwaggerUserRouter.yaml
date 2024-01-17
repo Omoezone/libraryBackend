@@ -107,9 +107,7 @@ paths:
           description: Successful response
       security:
         - BearerAuth: []
-tags:
-  - name: Neo4j User
-    description: Operations related to Neo4j user management
+
 components:
   securitySchemes:
     BearerAuth:

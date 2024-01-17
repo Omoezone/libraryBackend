@@ -8,7 +8,7 @@ paths:
     post:
       summary: User Signup
       tags:
-        - Neo4j Authentication
+        - Neo4j authentication
       requestBody:
         content:
           application/json:
@@ -46,7 +46,7 @@ paths:
     post:
       summary: User Login
       tags:
-        - Neo4j Authentication
+        - Neo4j authentication
       requestBody:
         content:
           application/json:
@@ -78,7 +78,7 @@ paths:
     post:
       summary: Verify User
       tags:
-        - Neo4j Authentication
+        - Neo4j authentication
       requestBody:
         content:
           application/json:
@@ -98,9 +98,7 @@ paths:
                 message: "User is verified!!"
       security:
         - BearerAuth: []
-tags:
-  - name: Neo4j Authentication
-    description: Operations related to Neo4j user authentication
+
 components:
   securitySchemes:
     BearerAuth:
